@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:fl_chart/fl_chart.dart';
-import 'package:screenshot/screenshot.dart';
 import 'package:coffeetracker/screens/home.dart';
 import 'package:coffeetracker/screens/calendar.dart';
 import 'package:coffeetracker/services/firestore_service.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:coffeetracker/screens/stats/drink_consumption.dart';
 import 'package:coffeetracker/screens/stats/volume_consumption.dart';
 import 'package:coffeetracker/screens/stats/expenditure.dart';
@@ -16,7 +15,8 @@ import 'package:coffeetracker/screens/stats/weekly_insight.dart';
 import 'package:coffeetracker/screens/stats/monthly_insight.dart';
 import 'package:coffeetracker/screens/stats/yearly_insight.dart';
 import 'package:coffeetracker/screens/stats/charts.dart';
-
+import 'package:screenshot/screenshot.dart';
+import 'package:share_plus/share_plus.dart';
 
 class StatisticPage extends StatefulWidget {
   @override
@@ -482,7 +482,6 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
 
@@ -500,9 +499,7 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
         actions: [
           IconButton(
             icon: const Icon(Icons.ios_share_rounded),
-            onPressed: () {
-              // Implement share functionality here
-            },
+            onPressed: _shareStatistics,
           ),
         ],
         bottom: PreferredSize(
@@ -542,14 +539,17 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
           ),
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildDailyStatistics(),
-          _buildWeeklyStatistics(),
-          _buildMonthlyStatistics(),
-          _buildYearlyStatistics(),
-        ],
+      body: Screenshot(
+        controller: _screenshotController,
+        child: TabBarView(
+          controller: _tabController,
+          children: [
+            _buildDailyStatistics(),
+            _buildWeeklyStatistics(),
+            _buildMonthlyStatistics(),
+            _buildYearlyStatistics(),
+          ],
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
@@ -700,7 +700,6 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
             _buildStatisticsSummary('year'),
             _buildCharts('year'),
             _buildRanking('year'),
-            const SizedBox(height: 10),
             _buildYearlyInsight('year'),
             
             // Future Development

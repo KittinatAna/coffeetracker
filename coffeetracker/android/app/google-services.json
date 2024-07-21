@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "659834791918",
+    "project_id": "coffeetracker-01",
+    "storage_bucket": "coffeetracker-01.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:659834791918:android:f1301d389f72100a5d10ff",
+        "android_client_info": {
+          "package_name": "com.example.coffeetracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbh7SwxtlfHLE6BVU32WOhvDu68h_vxkw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

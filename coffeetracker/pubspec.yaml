@@ -53,6 +53,8 @@ dependencies:
   fl_chart: ^0.68.0
   syncfusion_flutter_charts: ^26.1.41+1
   tflite_flutter: ^0.10.4
+  screenshot: ^3.0.0
+  share_plus: ^9.0.0
 
 dev_dependencies:
   flutter_test:

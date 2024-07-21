@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:coffeetracker/screens/home.dart';
 import 'package:coffeetracker/screens/calendar.dart';
 import 'package:coffeetracker/services/firestore_service.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:coffeetracker/screens/stats/drink_consumption.dart';
 import 'package:coffeetracker/screens/stats/volume_consumption.dart';
 import 'package:coffeetracker/screens/stats/expenditure.dart';
@@ -471,6 +473,10 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
         )
       ),
     );
+  }
+
+  void _shareStatistics() async {
+    final image = await 
   }
 
 

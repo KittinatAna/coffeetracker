@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:screenshot/screenshot.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:coffeetracker/screens/home.dart';
 import 'package:coffeetracker/screens/calendar.dart';
 import 'package:coffeetracker/services/firestore_service.dart';
@@ -37,6 +36,7 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
   late TabController _tabController;
   DateTime _currentDate = DateTime.now();
   final FirestoreService _firestoreService = FirestoreService();
+  final ScreenshotController _screenshotController = ScreenshotController();
 
   @override
   void initState() {
@@ -476,7 +476,10 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
   }
 
   void _shareStatistics() async {
-    final image = await 
+    final image = await _screenshotController.capture();
+    if (image != null) {
+      await Share.shareFiles([image.path], text: 'Here are my coffee consumption statistics!');
+    }
   }
 
 

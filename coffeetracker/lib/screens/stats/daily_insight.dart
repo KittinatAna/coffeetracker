@@ -141,8 +141,8 @@ class DailyInsight extends StatelessWidget {
                 consumption['Total'] ?? 0,
               ));
             }
-            print('last7Days: $last7Days');
-            print('trendData: $trendData');
+            // print('last7Days: $last7Days');
+            // print('trendData: $trendData');
             String trendDescription = _getTrendDescription(trendData);
             
 

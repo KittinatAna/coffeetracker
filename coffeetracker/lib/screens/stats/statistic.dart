@@ -1,6 +1,7 @@
-import 'dart:typed_data';
 import 'dart:io';
 import 'dart:ui';
+// import 'dart:convert';
+import 'package:csv/csv.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
@@ -8,6 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:coffeetracker/screens/home.dart';
 import 'package:coffeetracker/screens/calendar.dart';
 import 'package:coffeetracker/services/firestore_service.dart';
@@ -21,9 +25,6 @@ import 'package:coffeetracker/screens/stats/weekly_insight.dart';
 import 'package:coffeetracker/screens/stats/monthly_insight.dart';
 import 'package:coffeetracker/screens/stats/yearly_insight.dart';
 import 'package:coffeetracker/screens/stats/charts.dart';
-import 'package:screenshot/screenshot.dart';
-import 'package:share_plus/share_plus.dart';
-// import 'package:image_gallery_saver/image_gallery_saver.dart';
 
 class StatisticPage extends StatefulWidget {
   @override
@@ -56,7 +57,7 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
     _tabController.addListener(() {
       setState(() {});
     });
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    // SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   }
 
   @override
@@ -197,15 +198,24 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
     DateTime endDate;
 
     Map<int, double> volumePerPeriod = {};
+    Map<int, double> expenditurePerPeriod = {};
+    List<Map<String, dynamic>> detailedData = [];
     double barWidth;
     double totalVolume = 0.0;
     double totalExpenditure = 0.0;
 
-    if (range == 'week') {
+    if (range == 'day') {
+      startDate = DateTime(_currentDate.year, _currentDate.month, _currentDate.day - 1);
+      endDate = startDate.add(const Duration(days: 2));
+      volumePerPeriod[0] = 0;
+      expenditurePerPeriod[0] = 0;
+      barWidth = 15.0;
+    } else if (range == 'week') {
       startDate = _currentDate.subtract(Duration(days: _currentDate.weekday));
       endDate = startDate.add(const Duration(days: 8));
       for (int i = 0; i < 7; i++) {
         volumePerPeriod[i] = 0;
+        expenditurePerPeriod[i] = 0;
       }
       barWidth = 15.0;
     } else if (range == 'month') {
@@ -214,6 +224,7 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
       int daysInMonth = DateTime(_currentDate.year, _currentDate.month + 1, 1).subtract(const Duration(days: 1)).day;
       for (int i = 0; i < daysInMonth; i++) {
         volumePerPeriod[i] = 0;
+        expenditurePerPeriod[i] = 0;
       }
       barWidth = 7.0;
     } else if (range == 'year') {
@@ -221,6 +232,7 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
       endDate = DateTime(_currentDate.year + 1, 1, 1);
       for (int i = 0; i < 12; i++) {
         volumePerPeriod[i] = 0;
+        expenditurePerPeriod[i] = 0;
       }
       barWidth = 10.0;
     } else {
@@ -235,15 +247,48 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
         totalVolume += volume;
         totalExpenditure += price;
 
-        if (range == 'week') {
+        String coffeeChoice = '';
+        if (record['is_purchased'] == true) {
+          coffeeChoice = 'Purchased Coffee';
+        } else if (record['is_homemade'] == true) {
+          coffeeChoice = 'Homemade Coffee';
+        } else if (record['is_vendingmachine'] == true) {
+          coffeeChoice = 'Coffee Vending Machine';
+        }
+
+        String coffeeShop = '';
+        if (record['is_purchased'] == true) {
+          coffeeShop = record['coffee_shop'];
+        } else if (record['is_homemade'] == true) {
+          coffeeShop = record['coffee_shop'];
+        } else if (record['is_vendingmachine'] == true) {
+          coffeeShop = record['brand'];
+        }
+
+        detailedData.add({
+          'date': recordDate,
+          'coffeeType': record['coffee_type_desc'],
+          'coffeeShop': coffeeShop,
+          'coffeeChoice': coffeeChoice,
+          'volume': volume,
+          'expenditure': price,
+        });
+
+        if (range == 'day') {
+          volumePerPeriod[0] = (volumePerPeriod[0] ?? 0) + volume;
+          expenditurePerPeriod[0] = (expenditurePerPeriod[0] ?? 0) + price;
+        } else if (range == 'week') {
           int dayOfWeek = recordDate.weekday - 1;
           volumePerPeriod[dayOfWeek] = (volumePerPeriod[dayOfWeek] ?? 0) + volume;
+          expenditurePerPeriod[dayOfWeek] = (expenditurePerPeriod[dayOfWeek] ?? 0) + price;
         } else if (range == 'month') {
           int dayOfMonth = recordDate.day - 1;
           volumePerPeriod[dayOfMonth] = (volumePerPeriod[dayOfMonth] ?? 0) + volume;
+          expenditurePerPeriod[dayOfMonth] = (expenditurePerPeriod[dayOfMonth] ?? 0) + price;
         } else if (range == 'year') {
           int month = recordDate.month - 1;
           volumePerPeriod[month] = (volumePerPeriod[month] ?? 0) + volume;
+          expenditurePerPeriod[month] = (expenditurePerPeriod[month] ?? 0) + price;
         }
       }
     }
@@ -269,6 +314,9 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
       'barGroups': barGroups,
       'averageVolume': averageVolume,
       'averageExpenditure': averageExpenditure,
+      'volumePerPeriod': volumePerPeriod,
+      'expenditurePerPeriod': expenditurePerPeriod,
+      'detailedData': detailedData,
     };
   }
 
@@ -505,7 +553,33 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
                   Column(
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.photo_library_rounded, size: 30, color: Colors.blue,),
+                        icon: const Icon(Icons.download, size: 30, color: Colors.black54,),
+                        onPressed: () {
+                          if (_tabController.index == 0) {
+                            _downloadStatistic('daily');
+                          } else if (_tabController.index == 1) {
+                            _downloadStatistic('weekly');
+                          } else if (_tabController.index == 2) {
+                            _downloadStatistic('monthly');
+                          } else if (_tabController.index == 3) {
+                            _downloadStatistic('yearly');
+                          } else {
+                          }
+                        }
+                      ),
+                      Text(
+                        ' Download ',
+                        style: GoogleFonts.montserrat(
+                          fontSize: 14,
+                          fontWeight: FontWeight.normal,
+                        ),
+                      )
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.photo_library_rounded, size: 30, color: Colors.black54,),
                         onPressed: () {
                           if (_tabController.index == 0) {
                             _shareStatistics('daily');
@@ -531,16 +605,16 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
                   Column(
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.drive_file_move_outline, size: 30, color: Colors.blue,),
+                        icon: const Icon(Icons.drive_file_move_outline, size: 30, color: Colors.black54,),
                         onPressed: () {
                           if (_tabController.index == 0) {
-                            _shareStatistics('daily');
+                            _shareCsvFile('day');
                           } else if (_tabController.index == 1) {
-                            _shareStatistics('weekly');
+                            _shareCsvFile('week');
                           } else if (_tabController.index == 2) {
-                            _shareStatistics('monthly');
+                            _shareCsvFile('month');
                           } else if (_tabController.index == 3) {
-                            _shareStatistics('yearly');
+                            _shareCsvFile('year');
                           } else {
                           }
                         }
@@ -563,45 +637,232 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
     );
   }
 
-Future<Uint8List> capturePng(GlobalKey key) async {
-  RenderRepaintBoundary boundary = key.currentContext!.findRenderObject() as RenderRepaintBoundary;
-  var image = await boundary.toImage(pixelRatio: 3.0);
-  ByteData? byteData = await image.toByteData(format: ImageByteFormat.png);
-  return byteData!.buffer.asUint8List();
-}
-
-void _shareStatistics(String range) async {
-  Navigator.pop(context); // Close the bottom sheet
-  GlobalKey key;
-
-  switch (range) {
-    case 'daily':
-      key = _dailyKey;
-      break;
-    case 'weekly':
-      key = _weeklyKey;
-      break;
-    case 'monthly':
-      key = _monthlyKey;
-      break;
-    case 'yearly':
-      key = _yearlyKey;
-      break;
-    default:
-      return;
+  Future<Uint8List> capturePng(GlobalKey key) async {
+    RenderRepaintBoundary boundary = key.currentContext!.findRenderObject() as RenderRepaintBoundary;
+    var image = await boundary.toImage(pixelRatio: 3);
+    ByteData? byteData = await image.toByteData(format: ImageByteFormat.png);
+    return byteData!.buffer.asUint8List();
   }
 
-  Uint8List imageData = await capturePng(key);
-  final directory = (await getApplicationDocumentsDirectory()).path;
-  final imgFile = await File('$directory/statistics.png').writeAsBytes(imageData);
+  void _downloadStatistic(String range) async {
+    Navigator.pop(context); // Close the bottom sheet
+    GlobalKey key;
 
-  final XFile file = XFile(imgFile.path);
+    switch (range) {
+      case 'daily':
+        key = _dailyKey;
+        break;
+      case 'weekly':
+        key = _weeklyKey;
+        break;
+      case 'monthly':
+        key = _monthlyKey;
+        break;
+      case 'yearly':
+        key = _yearlyKey;
+        break;
+      default:
+        return;
+    }
 
-  await Share.shareXFiles(
-    [file],
-    text: 'Here are my coffee statistics in $range',
-  );
-}
+    Uint8List imageData = await capturePng(key);
+
+    // Save the image to the gallery
+    final result = await ImageGallerySaver.saveImage(imageData);
+    if (result['isSuccess']) {
+      // print('Image saved to gallery');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Image saved to gallery',
+            style: GoogleFonts.montserrat(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          backgroundColor: Colors.green,
+          dismissDirection: DismissDirection.up,
+          behavior: SnackBarBehavior.floating,
+          margin: EdgeInsets.only(
+            bottom: MediaQuery.of(context).size.height - 210,
+            left: 15,
+            right: 15,
+          ),
+        ),
+      );
+    } else {
+      // print('Failed to save image');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Failed to save image',
+            style: GoogleFonts.montserrat(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          backgroundColor: Colors.red,
+          dismissDirection: DismissDirection.up,
+          behavior: SnackBarBehavior.floating,
+          margin: EdgeInsets.only(
+            bottom: MediaQuery.of(context).size.height - 210,
+            left: 15,
+            right: 15,
+          ),
+        ),
+      );
+    }
+  }
+
+  void _shareStatistics(String range) async {
+    Navigator.pop(context); // Close the bottom sheet
+    GlobalKey key;
+
+    switch (range) {
+      case 'daily':
+        key = _dailyKey;
+        break;
+      case 'weekly':
+        key = _weeklyKey;
+        break;
+      case 'monthly':
+        key = _monthlyKey;
+        break;
+      case 'yearly':
+        key = _yearlyKey;
+        break;
+      default:
+        return;
+    }
+
+    Uint8List imageData = await capturePng(key);
+
+    // Share the image
+    final directory = (await getApplicationDocumentsDirectory()).path;
+    final imgFile = await File('$directory/statistics.png').writeAsBytes(imageData);
+
+    final XFile file = XFile(imgFile.path);
+
+    await Share.shareXFiles(
+      [file],
+      text: 'Here are my coffee statistics for $range',
+    );
+  }
+
+  Future<void> _generateCsvFile(String range, Map<String, dynamic> summaryData, Map<String, dynamic> barchartData) async {
+    
+    DateTimeRange dateRange = _DateRangeForNavigate(range);
+    DateTime startDate = dateRange.start;
+    // DateTime endDate = dateRange.end;
+    
+    String _getFormattedDateRange() {
+      if (range == 'day') {
+        DateTime startofDate = DateTime(startDate.year, startDate.month, startDate.day + 1);
+        return DateFormat('d MMMM yyyy').format(startofDate);
+      } else if (range == 'week') {
+        DateTime startOfWeek = startDate.subtract(Duration(days: startDate.weekday - 8));
+        DateTime endOfWeek = startOfWeek.add(const Duration(days: 6));
+        return '${DateFormat('d MMM').format(startOfWeek)} - ${DateFormat('d MMM yyyy').format(endOfWeek)}';
+      } else if (range == 'month') {
+        DateTime startOfMonth = DateTime(startDate.year, startDate.month + 2, 0);
+        return DateFormat('MMMM yyyy').format(startOfMonth);
+      } else if (range == 'year') {
+        DateTime startOfYear = DateTime(startDate.year + 2, 1, 0);
+        return DateFormat('yyyy').format(startOfYear);
+      } else {
+        return '';
+      }
+    }
+
+    List<List<dynamic>> rows = [
+      ["Date: ${(_getFormattedDateRange().toString())}"],
+      [],
+      ["Statistic", "Value"],
+      ["Total Drinks Consumed", summaryData['totalDrinks'], "drinks"],
+      ["Total Volume Consumed (mL)", summaryData['totalVolume'], "mL"],
+      ["Total Expenditure", summaryData['totalExpenditure'], "GBP"],
+      []
+    ];
+
+    List<Map<String, dynamic>> detailedData = barchartData['detailedData'] as List<Map<String, dynamic>>;
+
+    if (detailedData.isNotEmpty) {
+      List<List<dynamic>> detailedRows = [
+        ["Date", "Coffee Type", "Coffee Shop", "Coffee Choice", "Volume (mL)", "Expenditure (GBP)"]
+      ];
+
+      detailedData.sort((a, b) => a['date'].compareTo(b['date'])); // Sort by date
+
+      detailedData.forEach((data) {
+        detailedRows.add([
+          DateFormat('yyyy-MM-dd').format(data['date']),
+          data['coffeeType'],
+          data['coffeeShop'],
+          data['coffeeChoice'],
+          data['volume'],
+          data['expenditure']
+        ]);
+      });
+
+      rows.addAll(detailedRows);
+    }
+
+    List<BarChartGroupData> barGroups = barchartData['barGroups'] as List<BarChartGroupData>;
+    Map<int, double> expenditurePerPeriod = barchartData['expenditurePerPeriod'] as Map<int, double>;
+
+    if (range == 'week' || range == 'month' || range == 'year') {
+      List<List<dynamic>> rows_add = [
+        [],
+        ["Date", "Volume (mL)", "Expenditure (GPB)"]
+      ];
+      
+      for (var barGroup in barGroups) {
+        int x = barGroup.x;
+        double volume = barGroup.barRods.first.toY;
+      double expenditure = expenditurePerPeriod[x] ?? 0.0;
+        
+        String formattedDate;
+        if (range == 'week') {
+          formattedDate = DateFormat('yyyy-MM-dd').format(startDate.add(Duration(days: x + 1)));
+        } else if (range == 'month') {
+          formattedDate = DateFormat('yyyy-MM-dd').format(startDate.add(Duration(days: x + 1)));
+        } else {
+          formattedDate = DateFormat('yyyy-MM-dd').format(DateTime(startDate.year, x + 1));
+        }
+
+        rows_add.add([formattedDate, volume, expenditure]);
+      }
+
+      rows.addAll(rows_add);
+    }
+
+    String csvData = const ListToCsvConverter().convert(rows);
+    final directory = await getApplicationDocumentsDirectory();
+    final path = "${directory.path}/statistics_$range.csv";
+    final File file = File(path);
+
+    await file.writeAsString(csvData);
+  }
+
+  void _shareCsvFile(String range) async {
+    Navigator.pop(context); // Close the bottom sheet
+    
+    final summaryData = await _fetchStatisticsSummary(range);
+    final barchartData = await _fetchBarChartData(range);
+    await _generateCsvFile(range, summaryData, barchartData);
+
+    final directory = await getApplicationDocumentsDirectory();
+    final path = "${directory.path}/statistics_$range.csv";
+    final XFile file = XFile(path);
+
+    await Share.shareXFiles(
+      [file],
+      text: 'Here are my coffee statistics summary in $range',
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -1360,4 +1621,5 @@ void _shareStatistics(String range) async {
       ),
     );
   }
+
 }

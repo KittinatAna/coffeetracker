@@ -1,3 +1,9 @@
+import 'dart:typed_data';
+import 'dart:io';
+import 'dart:ui';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -17,6 +23,7 @@ import 'package:coffeetracker/screens/stats/yearly_insight.dart';
 import 'package:coffeetracker/screens/stats/charts.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
+// import 'package:image_gallery_saver/image_gallery_saver.dart';
 
 class StatisticPage extends StatefulWidget {
   @override
@@ -36,12 +43,20 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
   late TabController _tabController;
   DateTime _currentDate = DateTime.now();
   final FirestoreService _firestoreService = FirestoreService();
-  // final screen
+  final GlobalKey _dailyKey = GlobalKey();
+  final GlobalKey _weeklyKey = GlobalKey();
+  final GlobalKey _monthlyKey = GlobalKey();
+  final GlobalKey _yearlyKey = GlobalKey();
+  ScreenshotController screenshotController = ScreenshotController();
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
+    _tabController.addListener(() {
+      setState(() {});
+    });
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   }
 
   @override
@@ -475,8 +490,118 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
     );
   }
 
+  void _showShareOptions() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Column(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.photo_library_rounded, size: 30, color: Colors.blue,),
+                        onPressed: () {
+                          if (_tabController.index == 0) {
+                            _shareStatistics('daily');
+                          } else if (_tabController.index == 1) {
+                            _shareStatistics('weekly');
+                          } else if (_tabController.index == 2) {
+                            _shareStatistics('monthly');
+                          } else if (_tabController.index == 3) {
+                            _shareStatistics('yearly');
+                          } else {
+                          }
+                        }
+                      ),
+                      Text(
+                        'Export Image',
+                        style: GoogleFonts.montserrat(
+                          fontSize: 14,
+                          fontWeight: FontWeight.normal,
+                        ),
+                      )
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.drive_file_move_outline, size: 30, color: Colors.blue,),
+                        onPressed: () {
+                          if (_tabController.index == 0) {
+                            _shareStatistics('daily');
+                          } else if (_tabController.index == 1) {
+                            _shareStatistics('weekly');
+                          } else if (_tabController.index == 2) {
+                            _shareStatistics('monthly');
+                          } else if (_tabController.index == 3) {
+                            _shareStatistics('yearly');
+                          } else {
+                          }
+                        }
+                      ),
+                      Text(
+                        'Export Data',
+                        style: GoogleFonts.montserrat(
+                          fontSize: 14,
+                          fontWeight: FontWeight.normal,
+                        ),
+                      )
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
+Future<Uint8List> capturePng(GlobalKey key) async {
+  RenderRepaintBoundary boundary = key.currentContext!.findRenderObject() as RenderRepaintBoundary;
+  var image = await boundary.toImage(pixelRatio: 3.0);
+  ByteData? byteData = await image.toByteData(format: ImageByteFormat.png);
+  return byteData!.buffer.asUint8List();
+}
 
+void _shareStatistics(String range) async {
+  Navigator.pop(context); // Close the bottom sheet
+  GlobalKey key;
+
+  switch (range) {
+    case 'daily':
+      key = _dailyKey;
+      break;
+    case 'weekly':
+      key = _weeklyKey;
+      break;
+    case 'monthly':
+      key = _monthlyKey;
+      break;
+    case 'yearly':
+      key = _yearlyKey;
+      break;
+    default:
+      return;
+  }
+
+  Uint8List imageData = await capturePng(key);
+  final directory = (await getApplicationDocumentsDirectory()).path;
+  final imgFile = await File('$directory/statistics.png').writeAsBytes(imageData);
+
+  final XFile file = XFile(imgFile.path);
+
+  await Share.shareXFiles(
+    [file],
+    text: 'Here are my coffee statistics in $range',
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -495,9 +620,7 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
         actions: [
           IconButton(
             icon: const Icon(Icons.ios_share_rounded),
-            onPressed: () {
-              // Implement share functionality here
-            },
+            onPressed: _showShareOptions,
           ),
         ],
         bottom: PreferredSize(
@@ -593,115 +716,135 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
   }
 
   Widget _buildDailyStatistics() {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            GestureDetector(
-              onTap: () => _selectDate(context, 'day'),
-              child: Text(
-                _getCurrentDateString(),
-                style: GoogleFonts.montserrat(
-                  fontSize: 16,
-                  fontWeight: FontWeight.normal,
+    return RepaintBoundary(
+      key: _dailyKey,
+      child: Container(
+        color: Colors.white,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                GestureDetector(
+                  onTap: () => _selectDate(context, 'day'),
+                  child: Text(
+                    _getCurrentDateString(),
+                    style: GoogleFonts.montserrat(
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
                 ),
-              ),
+                const SizedBox(height: 16),
+                _buildStatisticsSummary('day'),
+                _buildRanking('day'),
+                const SizedBox(height: 10),
+                _buildDailyInsight('day'),
+              ],
             ),
-            const SizedBox(height: 16),
-            _buildStatisticsSummary('day'),
-            _buildRanking('day'),
-            const SizedBox(height: 10),
-            _buildDailyInsight('day'),
-          ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildWeeklyStatistics() {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            GestureDetector(
-              onTap: () => _selectDate(context, 'week'),
-              child: Text(
-                _getCurrentWeekRangeString(),
-                style: GoogleFonts.montserrat(
-                  fontSize: 16,
-                  fontWeight: FontWeight.normal,
+    return RepaintBoundary(
+      key: _weeklyKey,
+      child: Container(
+        color: Colors.white,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                GestureDetector(
+                  onTap: () => _selectDate(context, 'week'),
+                  child: Text(
+                    _getCurrentWeekRangeString(),
+                    style: GoogleFonts.montserrat(
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
                 ),
-              ),
+                const SizedBox(height: 16),
+                _buildStatisticsSummary('week'),
+                _buildCharts('week'),
+                _buildRanking('week'),
+                const SizedBox(height: 10),
+                _buildWeeklyInsight('week'),
+              ],
             ),
-            const SizedBox(height: 16),
-            _buildStatisticsSummary('week'),
-            _buildCharts('week'),
-            _buildRanking('week'),
-            const SizedBox(height: 10),
-            _buildWeeklyInsight('week'),
-          ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildMonthlyStatistics() {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            GestureDetector(
-              onTap: () => _selectDate(context, 'month'),
-              child: Text(
-                _getCurrentMonthString(),
-                style: GoogleFonts.montserrat(
-                  fontSize: 16,
-                  fontWeight: FontWeight.normal,
+    return RepaintBoundary(
+      key: _monthlyKey,
+      child: Container(
+        color: Colors.white,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                GestureDetector(
+                  onTap: () => _selectDate(context, 'month'),
+                  child: Text(
+                    _getCurrentMonthString(),
+                    style: GoogleFonts.montserrat(
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
                 ),
-              ),
+                const SizedBox(height: 16),
+                _buildStatisticsSummary('month'),
+                _buildCharts('month'),
+                _buildRanking('month'),
+                const SizedBox(height: 10),
+                _buildMonthlyInsight('month'),
+              ],
             ),
-            const SizedBox(height: 16),
-            _buildStatisticsSummary('month'),
-            _buildCharts('month'),
-            _buildRanking('month'),
-            const SizedBox(height: 10),
-            _buildMonthlyInsight('month'),
-          ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildYearlyStatistics() {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            GestureDetector(
-              onTap: () => _selectDate(context, 'year'),
-              child: Text(
-                _getCurrentYearString(),
-                style: GoogleFonts.montserrat(
-                  fontSize: 16,
-                  fontWeight: FontWeight.normal,
+    return RepaintBoundary(
+      key: _yearlyKey,
+      child: Container(
+        color: Colors.white,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                GestureDetector(
+                  onTap: () => _selectDate(context, 'year'),
+                  child: Text(
+                    _getCurrentYearString(),
+                    style: GoogleFonts.montserrat(
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
                 ),
-              ),
+                const SizedBox(height: 16),
+                _buildStatisticsSummary('year'),
+                _buildCharts('year'),
+                _buildRanking('year'),
+                const SizedBox(height: 10),
+                _buildYearlyInsight('year'),
+              ],
             ),
-            const SizedBox(height: 16),
-            _buildStatisticsSummary('year'),
-            _buildCharts('year'),
-            _buildRanking('year'),
-            const SizedBox(height: 10),
-            _buildYearlyInsight('year'),
-            
-            // Future Development
-            // const SizedBox(height: 10),
-            // _buildPredictiveAnalytics('year'),
-          ],
+          ),
         ),
       ),
     );

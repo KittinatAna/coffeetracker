@@ -57,22 +57,21 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
     super.dispose();
   }
 
-  String _getCurrentDateString() {
-    return DateFormat('d MMMM yyyy').format(_currentDate);
-  }
-
-  String _getCurrentWeekRangeString() {
-    DateTime startOfWeek = _currentDate.subtract(Duration(days: _currentDate.weekday - 1));
-    DateTime endOfWeek = startOfWeek.add(const Duration(days: 6));
-    return '${DateFormat('d MMM').format(startOfWeek)} - ${DateFormat('d MMM yyyy').format(endOfWeek)}';
-  }
-
-  String _getCurrentMonthString() {
-    return DateFormat('MMMM yyyy').format(_currentDate);
-  }
-
-  String _getCurrentYearString() {
-    return DateFormat('yyyy').format(_currentDate);
+  String _getFormattedDateRange(String range) {
+    switch (range) {
+      case 'day':
+        return DateFormat('d MMMM yyyy').format(_currentDate);
+      case 'week':
+        DateTime startOfWeek = _currentDate.subtract(Duration(days: _currentDate.weekday - 1));
+        DateTime endOfWeek = startOfWeek.add(const Duration(days: 6));
+        return '${DateFormat('d MMM').format(startOfWeek)} - ${DateFormat('d MMM yyyy').format(endOfWeek)}';
+      case 'month':
+        return DateFormat('MMMM yyyy').format(_currentDate);
+      case 'year':
+        return DateFormat('yyyy').format(_currentDate);
+      default:
+        return '';
+    }
   }
 
   Future<Map<String, dynamic>> _fetchStatisticsSummary(String range) async {
@@ -80,20 +79,25 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
     DateTime startDate;
     DateTime endDate;
 
-    if (range == 'day') {
-      startDate = DateTime(_currentDate.year, _currentDate.month, _currentDate.day - 1);
-      endDate = startDate.add(const Duration(days: 2));
-    } else if (range == 'week') {
-      startDate = _currentDate.subtract(Duration(days: _currentDate.weekday));
-      endDate = startDate.add(const Duration(days: 8));
-    } else if (range == 'month') {
-      startDate = DateTime(_currentDate.year, _currentDate.month, 0);
-      endDate = DateTime(_currentDate.year, _currentDate.month + 1, 1);
-    } else if (range == 'year') {
-      startDate = DateTime(_currentDate.year, 1, 0);
-      endDate = DateTime(_currentDate.year + 1, 1, 1);
-    } else {
-      throw ArgumentError('Invalid range');
+    switch (range) {
+      case 'day':
+        startDate = DateTime(_currentDate.year, _currentDate.month, _currentDate.day - 1);
+        endDate = startDate.add(const Duration(days: 2));
+        break;
+      case 'week':
+        startDate = _currentDate.subtract(Duration(days: _currentDate.weekday));
+        endDate = startDate.add(const Duration(days: 8));
+        break;
+      case 'month':
+        startDate = DateTime(_currentDate.year, _currentDate.month, 0);
+        endDate = DateTime(_currentDate.year, _currentDate.month + 1, 1);
+        break;
+      case 'year':
+        startDate = DateTime(_currentDate.year, 1, 0);
+        endDate = DateTime(_currentDate.year + 1, 1, 1);
+        break;
+      default:
+        throw ArgumentError('Invalid range');
     }
 
     int totalDrinks = 0;
@@ -121,20 +125,25 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
     DateTime startDate;
     DateTime endDate;
 
-    if (range == 'day') {
-      startDate = DateTime(_currentDate.year, _currentDate.month, _currentDate.day - 1);
-      endDate = startDate.add(const Duration(days: 2));
-    } else if (range == 'week') {
-      startDate = _currentDate.subtract(Duration(days: _currentDate.weekday));
-      endDate = startDate.add(const Duration(days: 8));
-    } else if (range == 'month') {
-      startDate = DateTime(_currentDate.year, _currentDate.month, 0);
-      endDate = DateTime(_currentDate.year, _currentDate.month + 1, 1);
-    } else if (range == 'year') {
-      startDate = DateTime(_currentDate.year, 1, 0);
-      endDate = DateTime(_currentDate.year + 1, 1, 1);
-    } else {
-      throw ArgumentError('Invalid range');
+    switch (range) {
+      case 'day':
+        startDate = DateTime(_currentDate.year, _currentDate.month, _currentDate.day - 1);
+        endDate = startDate.add(const Duration(days: 2));
+        break;
+      case 'week':
+        startDate = _currentDate.subtract(Duration(days: _currentDate.weekday));
+        endDate = startDate.add(const Duration(days: 8));
+        break;
+      case 'month':
+        startDate = DateTime(_currentDate.year, _currentDate.month, 0);
+        endDate = DateTime(_currentDate.year, _currentDate.month + 1, 1);
+        break;
+      case 'year':
+        startDate = DateTime(_currentDate.year, 1, 0);
+        endDate = DateTime(_currentDate.year + 1, 1, 1);
+        break;
+      default:
+        throw ArgumentError('Invalid range');
     }
 
     Map<String, int> coffeeTypeVolumes = {};
@@ -162,8 +171,8 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
         .toList();
 
     topCoffeeTypes.sort((a, b) {
-      int volumeCompare  = b['volume'].compareTo(a['volume']);
-      if (volumeCompare  != 0) return volumeCompare ;
+      int volumeCompare = b['volume'].compareTo(a['volume']);
+      if (volumeCompare != 0) return volumeCompare;
       return a['name'].compareTo(b['name']);
     });
 
@@ -195,39 +204,44 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
     double totalVolume = 0.0;
     double totalExpenditure = 0.0;
 
-    if (range == 'day') {
-      startDate = DateTime(_currentDate.year, _currentDate.month, _currentDate.day - 1);
-      endDate = startDate.add(const Duration(days: 2));
-      volumePerPeriod[0] = 0;
-      expenditurePerPeriod[0] = 0;
-      barWidth = 15.0;
-    } else if (range == 'week') {
-      startDate = _currentDate.subtract(Duration(days: _currentDate.weekday));
-      endDate = startDate.add(const Duration(days: 8));
-      for (int i = 0; i < 7; i++) {
-        volumePerPeriod[i] = 0;
-        expenditurePerPeriod[i] = 0;
-      }
-      barWidth = 15.0;
-    } else if (range == 'month') {
-      startDate = DateTime(_currentDate.year, _currentDate.month, 0);
-      endDate = DateTime(_currentDate.year, _currentDate.month + 1, 1);
-      int daysInMonth = DateTime(_currentDate.year, _currentDate.month + 1, 1).subtract(const Duration(days: 1)).day;
-      for (int i = 0; i < daysInMonth; i++) {
-        volumePerPeriod[i] = 0;
-        expenditurePerPeriod[i] = 0;
-      }
-      barWidth = 7.0;
-    } else if (range == 'year') {
-      startDate = DateTime(_currentDate.year, 1, 0);
-      endDate = DateTime(_currentDate.year + 1, 1, 1);
-      for (int i = 0; i < 12; i++) {
-        volumePerPeriod[i] = 0;
-        expenditurePerPeriod[i] = 0;
-      }
-      barWidth = 10.0;
-    } else {
-      throw ArgumentError('Invalid range');
+    switch (range) {
+      case 'day':
+        startDate = DateTime(_currentDate.year, _currentDate.month, _currentDate.day - 1);
+        endDate = startDate.add(const Duration(days: 2));
+        volumePerPeriod[0] = 0;
+        expenditurePerPeriod[0] = 0;
+        barWidth = 15.0;
+        break;
+      case 'week':
+        startDate = _currentDate.subtract(Duration(days: _currentDate.weekday));
+        endDate = startDate.add(const Duration(days: 8));
+        for (int i = 0; i < 7; i++) {
+          volumePerPeriod[i] = 0;
+          expenditurePerPeriod[i] = 0;
+        }
+        barWidth = 15.0;
+        break;
+      case 'month':
+        startDate = DateTime(_currentDate.year, _currentDate.month, 0);
+        endDate = DateTime(_currentDate.year, _currentDate.month + 1, 1);
+        int daysInMonth = DateTime(_currentDate.year, _currentDate.month + 1, 1).subtract(const Duration(days: 1)).day;
+        for (int i = 0; i < daysInMonth; i++) {
+          volumePerPeriod[i] = 0;
+          expenditurePerPeriod[i] = 0;
+        }
+        barWidth = 7.0;
+        break;
+      case 'year':
+        startDate = DateTime(_currentDate.year, 1, 0);
+        endDate = DateTime(_currentDate.year + 1, 1, 1);
+        for (int i = 0; i < 12; i++) {
+          volumePerPeriod[i] = 0;
+          expenditurePerPeriod[i] = 0;
+        }
+        barWidth = 10.0;
+        break;
+      default:
+        throw ArgumentError('Invalid range');
     }
 
     for (var record in records) {
@@ -238,23 +252,17 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
         totalVolume += volume;
         totalExpenditure += price;
 
-        String coffeeChoice = '';
-        if (record['is_purchased'] == true) {
-          coffeeChoice = 'Purchased Coffee';
-        } else if (record['is_homemade'] == true) {
-          coffeeChoice = 'Homemade Coffee';
-        } else if (record['is_vendingmachine'] == true) {
-          coffeeChoice = 'Coffee Vending Machine';
-        }
+        String coffeeChoice = record['is_purchased'] == true
+            ? 'Purchased Coffee'
+            : record['is_homemade'] == true
+                ? 'Homemade Coffee'
+                : 'Coffee Vending Machine';
 
-        String coffeeShop = '';
-        if (record['is_purchased'] == true) {
-          coffeeShop = record['coffee_shop'];
-        } else if (record['is_homemade'] == true) {
-          coffeeShop = record['coffee_shop'];
-        } else if (record['is_vendingmachine'] == true) {
-          coffeeShop = record['brand'];
-        }
+        String coffeeShop = record['is_purchased'] == true
+            ? record['coffee_shop']
+            : record['is_homemade'] == true
+                ? record['coffee_shop']
+                : record['brand'];
 
         detailedData.add({
           'date': recordDate,
@@ -292,7 +300,7 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
               x: entry.key,
               barRods: [
                 BarChartRodData(
-                  toY: entry.value, 
+                  toY: entry.value,
                   color: Colors.blue,
                   width: barWidth,
                   borderRadius: BorderRadius.circular(4),
@@ -312,41 +320,16 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
   }
 
   void _selectDate(BuildContext context, String range) async {
-    DateTime? picked;
-    if (range == 'day') {
-      picked = await showDatePicker(
-        context: context,
-        initialDate: _currentDate,
-        firstDate: DateTime(2020),
-        lastDate: DateTime(2101),
-      );
-    } else if (range == 'week') {
-      picked = await showDatePicker(
-        context: context,
-        initialDate: _currentDate,
-        firstDate: DateTime(2020),
-        lastDate: DateTime(2101),
-      );
-      if (picked != null) {
-        picked = picked.subtract(Duration(days: picked.weekday - 1));
-      }
-    } else if (range == 'month') {
-      picked = await showDatePicker(
-        context: context,
-        initialDate: _currentDate,
-        firstDate: DateTime(2020),
-        lastDate: DateTime(2101),
-      );
-    } else if (range == 'year') {
-      picked = await showDatePicker(
-        context: context,
-        initialDate: _currentDate,
-        firstDate: DateTime(2020),
-        lastDate: DateTime(2101),
-      );
-      if (picked != null) {
-        picked = DateTime(picked.year);
-      }
+    DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _currentDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && range == 'week') {
+      picked = picked.subtract(Duration(days: picked.weekday - 1));
+    } else if (picked != null && range == 'year') {
+      picked = DateTime(picked.year);
     }
 
     if (picked != null && picked != _currentDate) {
@@ -360,171 +343,37 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
     DateTime startDate;
     DateTime endDate;
 
-    if (range == 'day') {
-      startDate = DateTime(_currentDate.year, _currentDate.month, _currentDate.day - 1);
-      endDate = startDate.add(const Duration(days: 2));
-    } else if (range == 'week') {
-      startDate = _currentDate.subtract(Duration(days: _currentDate.weekday));
-      endDate = startDate.add(const Duration(days: 8));
-    } else if (range == 'month') {
-      startDate = DateTime(_currentDate.year, _currentDate.month, 0);
-      endDate = DateTime(_currentDate.year, _currentDate.month + 1, 1);
-    } else if (range == 'year') {
-      startDate = DateTime(_currentDate.year, 1, 0);
-      endDate = DateTime(_currentDate.year + 1, 1, 1);
-    } else {
-      throw ArgumentError('Invalid range');
+    switch (range) {
+      case 'day':
+        startDate = DateTime(_currentDate.year, _currentDate.month, _currentDate.day - 1);
+        endDate = startDate.add(const Duration(days: 2));
+        break;
+      case 'week':
+        startDate = _currentDate.subtract(Duration(days: _currentDate.weekday));
+        endDate = startDate.add(const Duration(days: 8));
+        break;
+      case 'month':
+        startDate = DateTime(_currentDate.year, _currentDate.month, 0);
+        endDate = DateTime(_currentDate.year, _currentDate.month + 1, 1);
+        break;
+      case 'year':
+        startDate = DateTime(_currentDate.year, 1, 0);
+        endDate = DateTime(_currentDate.year + 1, 1, 1);
+        break;
+      default:
+        throw ArgumentError('Invalid range');
     }
 
     return DateTimeRange(start: startDate, end: endDate);
   }
 
-  void _navigateToDrinksConsumption(String range) {
-    DateTimeRange dateRange = _DateRangeForNavigate(range);
+  void _navigateToPage(String range, Widget page) {
+    _DateRangeForNavigate(range);
 
     Navigator.push(
       context,
       NoTransitionPageRoute(
-        builder: (context) => DrinksConsumptionPage(
-          startDate: dateRange.start,
-          endDate: dateRange.end,
-          range: range,
-        )
-      ),
-    );
-  }
-
-  void _navigateToVolumeConsumption(String range) {
-    DateTimeRange dateRange = _DateRangeForNavigate(range);
-
-    Navigator.push(
-      context,
-      NoTransitionPageRoute(
-        builder: (context) => VolumeConsumptionPage(
-          startDate: dateRange.start,
-          endDate: dateRange.end,
-          range: range,
-        )
-      ),
-    );
-  }
-
-  void _navigateToExpenditure(String range) {
-    DateTimeRange dateRange = _DateRangeForNavigate(range);
-
-    Navigator.push(
-      context,
-      NoTransitionPageRoute(
-        builder: (context) => ExpenditurePage(
-          startDate: dateRange.start,
-          endDate: dateRange.end,
-          range: range,
-        )
-      ),
-    );
-  }
-
-  void _navigateToTypeRanking(String range) {
-    DateTimeRange dateRange = _DateRangeForNavigate(range);
-
-    Navigator.push(
-      context,
-      NoTransitionPageRoute(
-        builder: (context) => TypeRankingPage(
-          startDate: dateRange.start,
-          endDate: dateRange.end,
-          range: range,
-        )
-      ),
-    );
-  }
-
-  void _navigateToShopRanking(String range) {
-    DateTimeRange dateRange = _DateRangeForNavigate(range);
-
-    Navigator.push(
-      context,
-      NoTransitionPageRoute(
-        builder: (context) => ShopRankingPage(
-          startDate: dateRange.start,
-          endDate: dateRange.end,
-          range: range,
-        )
-      ),
-    );
-  }
-
-  void _navigateToDailyInsight(String range) {
-    DateTimeRange dateRange = _DateRangeForNavigate(range);
-
-    Navigator.push(
-      context,
-      NoTransitionPageRoute(
-        builder: (context) => DailyInsight(
-          startDate: dateRange.start,
-          endDate: dateRange.end,
-          range: range,
-        )
-      ),
-    );
-  }
-
-  void _navigateToWeeklyInsight(String range) {
-    DateTimeRange dateRange = _DateRangeForNavigate(range);
-
-    Navigator.push(
-      context,
-      NoTransitionPageRoute(
-        builder: (context) => WeeklyInsight(
-          startDate: dateRange.start,
-          endDate: dateRange.end,
-          range: range,
-        )
-      ),
-    );
-  }
-
-  void _navigateToMonthlyInsight(String range) {
-    DateTimeRange dateRange = _DateRangeForNavigate(range);
-
-    Navigator.push(
-      context,
-      NoTransitionPageRoute(
-        builder: (context) => MonthlyInsight(
-          startDate: dateRange.start,
-          endDate: dateRange.end,
-          range: range,
-        )
-      ),
-    );
-  }
-
-  void _navigateToYearlyInsight(String range) {
-    DateTimeRange dateRange = _DateRangeForNavigate(range);
-
-    Navigator.push(
-      context,
-      NoTransitionPageRoute(
-        builder: (context) => YearlyInsight(
-          startDate: dateRange.start,
-          endDate: dateRange.end,
-          range: range,
-        )
-      ),
-    );
-  }
-
-  void _navigateToCharts(String range) {
-    DateTimeRange dateRange = _DateRangeForNavigate(range);
-
-    Navigator.push(
-      context,
-      NoTransitionPageRoute(
-        builder: (context) => Charts(
-          startDate: dateRange.start,
-          endDate: dateRange.end,
-          range: range,
-        )
+        builder: (context) => page,
       ),
     );
   }
@@ -561,7 +410,6 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
   }
 
   Widget _buildStatisticsContent(String range) {
-    // This is a simplified version. You may need to customize it based on the actual content.
     return Column(
       children: [
         _buildStatisticsSummary(range),
@@ -585,10 +433,10 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
                   Column(
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.photo_library_rounded, size: 30, color: Colors.black54,),
+                        icon: const Icon(Icons.photo_library_rounded, size: 30, color: Colors.black54),
                         onPressed: () {
                           _navigateToCapturePage(_getCurrentRange());
-                        }
+                        },
                       ),
                       Text(
                         'Export Image',
@@ -596,25 +444,16 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
                           fontSize: 14,
                           fontWeight: FontWeight.normal,
                         ),
-                      )
+                      ),
                     ],
                   ),
                   Column(
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.drive_file_move_outline, size: 30, color: Colors.black54,),
+                        icon: const Icon(Icons.drive_file_move_outline, size: 30, color: Colors.black54),
                         onPressed: () {
-                          if (_tabController.index == 0) {
-                            _shareCsvFile('day');
-                          } else if (_tabController.index == 1) {
-                            _shareCsvFile('week');
-                          } else if (_tabController.index == 2) {
-                            _shareCsvFile('month');
-                          } else if (_tabController.index == 3) {
-                            _shareCsvFile('year');
-                          } else {
-                          }
-                        }
+                          _shareCsvFile(_getCurrentRange());
+                        },
                       ),
                       Text(
                         'Export Data',
@@ -622,7 +461,7 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
                           fontSize: 14,
                           fontWeight: FontWeight.normal,
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ],
@@ -635,32 +474,28 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
   }
 
   Future<void> _generateCsvFile(String range, Map<String, dynamic> summaryData, Map<String, dynamic> barchartData) async {
-    
     DateTimeRange dateRange = _DateRangeForNavigate(range);
     DateTime startDate = dateRange.start;
-    // DateTime endDate = dateRange.end;
-    
+
     String getFormattedDateRange() {
-      if (range == 'day') {
-        DateTime startofDate = DateTime(startDate.year, startDate.month, startDate.day + 1);
-        return DateFormat('d MMMM yyyy').format(startofDate);
-      } else if (range == 'week') {
-        DateTime startOfWeek = startDate.subtract(Duration(days: startDate.weekday - 8));
-        DateTime endOfWeek = startOfWeek.add(const Duration(days: 6));
-        return '${DateFormat('d MMM').format(startOfWeek)} - ${DateFormat('d MMM yyyy').format(endOfWeek)}';
-      } else if (range == 'month') {
-        DateTime startOfMonth = DateTime(startDate.year, startDate.month + 2, 0);
-        return DateFormat('MMMM yyyy').format(startOfMonth);
-      } else if (range == 'year') {
-        DateTime startOfYear = DateTime(startDate.year + 2, 1, 0);
-        return DateFormat('yyyy').format(startOfYear);
-      } else {
-        return '';
+      switch (range) {
+        case 'day':
+          return DateFormat('d MMMM yyyy').format(startDate);
+        case 'week':
+          DateTime startOfWeek = startDate.subtract(Duration(days: startDate.weekday - 1));
+          DateTime endOfWeek = startOfWeek.add(const Duration(days: 6));
+          return '${DateFormat('d MMM').format(startOfWeek)} - ${DateFormat('d MMM yyyy').format(endOfWeek)}';
+        case 'month':
+          return DateFormat('MMMM yyyy').format(startDate);
+        case 'year':
+          return DateFormat('yyyy').format(startDate);
+        default:
+          return '';
       }
     }
 
     List<List<dynamic>> rows = [
-      ["Date: ${(getFormattedDateRange().toString())}"],
+      ["Date: ${getFormattedDateRange()}"],
       [],
       ["Statistic", "Value"],
       ["Total Drinks Consumed", summaryData['totalDrinks'], "drinks"],
@@ -700,12 +535,12 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
         [],
         ["Date", "Volume (mL)", "Expenditure (GPB)"]
       ];
-      
+
       for (var barGroup in barGroups) {
         int x = barGroup.x;
         double volume = barGroup.barRods.first.toY;
-      double expenditure = expenditurePerPeriod[x] ?? 0.0;
-        
+        double expenditure = expenditurePerPeriod[x] ?? 0.0;
+
         String formattedDate;
         if (range == 'week') {
           formattedDate = DateFormat('yyyy-MM-dd').format(startDate.add(Duration(days: x + 1)));
@@ -731,7 +566,7 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
 
   void _shareCsvFile(String range) async {
     Navigator.pop(context); // Close the bottom sheet
-    
+
     final summaryData = await _fetchStatisticsSummary(range);
     final barchartData = await _fetchBarChartData(range);
     await _generateCsvFile(range, summaryData, barchartData);
@@ -746,10 +581,8 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -774,7 +607,7 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
             margin: const EdgeInsets.symmetric(horizontal: 20),
             decoration: const BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(10)),
-              color: Colors.white
+              color: Colors.white,
             ),
             child: TabBar(
               controller: _tabController,
@@ -860,98 +693,31 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
   }
 
   Widget _buildDailyStatistics() {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            GestureDetector(
-              onTap: () => _selectDate(context, 'day'),
-              child: Text(
-                _getCurrentDateString(),
-                style: GoogleFonts.montserrat(
-                  fontSize: 16,
-                  fontWeight: FontWeight.normal,
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            _buildStatisticsSummary('day'),
-            _buildRanking('day'),
-            const SizedBox(height: 10),
-            _buildDailyInsight('day'),
-          ],
-        ),
-      ),
-    );
+    return _buildStatisticsPage('day', _getFormattedDateRange('day'), _buildDailyInsight);
   }
 
   Widget _buildWeeklyStatistics() {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            GestureDetector(
-              onTap: () => _selectDate(context, 'week'),
-              child: Text(
-                _getCurrentWeekRangeString(),
-                style: GoogleFonts.montserrat(
-                  fontSize: 16,
-                  fontWeight: FontWeight.normal,
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            _buildStatisticsSummary('week'),
-            _buildCharts('week'),
-            _buildRanking('week'),
-            const SizedBox(height: 10),
-            _buildWeeklyInsight('week'),
-          ],
-        ),
-      ),
-    );
+    return _buildStatisticsPage('week', _getFormattedDateRange('week'), _buildWeeklyInsight);
   }
 
   Widget _buildMonthlyStatistics() {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            GestureDetector(
-              onTap: () => _selectDate(context, 'month'),
-              child: Text(
-                _getCurrentMonthString(),
-                style: GoogleFonts.montserrat(
-                  fontSize: 16,
-                  fontWeight: FontWeight.normal,
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            _buildStatisticsSummary('month'),
-            _buildCharts('month'),
-            _buildRanking('month'),
-            const SizedBox(height: 10),
-            _buildMonthlyInsight('month'),
-          ],
-        ),
-      ),
-    );
+    return _buildStatisticsPage('month', _getFormattedDateRange('month'), _buildMonthlyInsight);
   }
 
   Widget _buildYearlyStatistics() {
+    return _buildStatisticsPage('year', _getFormattedDateRange('year'), _buildYearlyInsight);
+  }
+
+  Widget _buildStatisticsPage(String range, String dateRange, Widget Function(String) buildInsight) {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             GestureDetector(
-              onTap: () => _selectDate(context, 'year'),
+              onTap: () => _selectDate(context, range),
               child: Text(
-                _getCurrentYearString(),
+                dateRange,
                 style: GoogleFonts.montserrat(
                   fontSize: 16,
                   fontWeight: FontWeight.normal,
@@ -959,11 +725,11 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
               ),
             ),
             const SizedBox(height: 16),
-            _buildStatisticsSummary('year'),
-            _buildCharts('year'),
-            _buildRanking('year'),
+            _buildStatisticsSummary(range),
+            if (range != 'day') _buildCharts(range),
+            _buildRanking(range),
             const SizedBox(height: 10),
-            _buildYearlyInsight('year'),
+            buildInsight(range),
           ],
         ),
       ),
@@ -986,9 +752,7 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   GestureDetector(
-                    onTap: () {
-                      _navigateToDrinksConsumption(range);
-                    },
+                    onTap: () => _navigateToPage(range, DrinksConsumptionPage(startDate: _DateRangeForNavigate(range).start, endDate: _DateRangeForNavigate(range).end, range: range)),
                     child: _buildStatisticsTile(
                       'Total Drinks \nConsumed',
                       data['totalDrinks'].toString(),
@@ -996,9 +760,7 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
                     ),
                   ),
                   GestureDetector(
-                    onTap: () {
-                      _navigateToVolumeConsumption(range);
-                    },
+                    onTap: () => _navigateToPage(range, VolumeConsumptionPage(startDate: _DateRangeForNavigate(range).start, endDate: _DateRangeForNavigate(range).end, range: range)),
                     child: _buildStatisticsTile(
                       'Total Volume \nConsumed (mL)',
                       data['totalVolume'].toString(),
@@ -1006,9 +768,7 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
                     ),
                   ),
                   GestureDetector(
-                    onTap: () {
-                      _navigateToExpenditure(range);
-                    },
+                    onTap: () => _navigateToPage(range, ExpenditurePage(startDate: _DateRangeForNavigate(range).start, endDate: _DateRangeForNavigate(range).end, range: range)),
                     child: _buildStatisticsTile(
                       'Total \nExpenditure',
                       '£ ${data['totalExpenditure'].toStringAsFixed(2)}',
@@ -1023,7 +783,7 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
                 style: GoogleFonts.montserrat(
                   fontSize: 12,
                   fontWeight: FontWeight.normal,
-                  color: Colors.black26
+                  color: Colors.black26,
                 ),
               ),
             ],
@@ -1074,7 +834,7 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
           final data = snapshot.data ?? {};
           final coffeeTypes = data['coffeeTypes'] ?? [];
           final coffeeShops = data['coffeeShops'] ?? [];
-          
+
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 10.0),
             child: Column(
@@ -1109,9 +869,7 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         GestureDetector(
-                          onTap: () {
-                            _navigateToTypeRanking(range);
-                          },
+                          onTap: () => _navigateToPage(range, TypeRankingPage(startDate: _DateRangeForNavigate(range).start, endDate: _DateRangeForNavigate(range).end, range: range)),
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(10, 10, 0, 10),
                             child: Column(
@@ -1162,9 +920,7 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
                         const Divider(height: 1, thickness: 1),
                         const SizedBox(height: 10),
                         GestureDetector(
-                          onTap: () {
-                            _navigateToShopRanking(range);
-                          },
+                          onTap: () => _navigateToPage(range, ShopRankingPage(startDate: _DateRangeForNavigate(range).start, endDate: _DateRangeForNavigate(range).end, range: range)),
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(10, 10, 0, 10),
                             child: Column(
@@ -1186,8 +942,8 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
                                         backgroundColor: index == 0
                                             ? const Color.fromARGB(255, 255, 215, 0)
                                             : index == 1
-                                            ? const Color.fromARGB(255, 192, 192, 192)
-                                            : const Color.fromARGB(255, 205, 127, 50),
+                                                ? const Color.fromARGB(255, 192, 192, 192)
+                                                : const Color.fromARGB(255, 205, 127, 50),
                                         radius: 13,
                                         child: Text(
                                           (index + 1).toString(),
@@ -1253,9 +1009,7 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
                 ),
                 Center(
                   child: GestureDetector(
-                    onTap: () {
-                      _navigateToCharts(range);
-                    },
+                    onTap: () => _navigateToPage(range, Charts(startDate: _DateRangeForNavigate(range).start, endDate: _DateRangeForNavigate(range).end, range: range)),
                     child: Container(
                       width: MediaQuery.of(context).size.width * 0.85,
                       padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
@@ -1277,8 +1031,11 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
                           Padding(
                             padding: const EdgeInsets.fromLTRB(10, 10, 0, 10),
                             child: Text(
-                              range == 'week' ? 'Daily Consumption' :
-                              range == 'month' ? 'Daily Consumption' : 'Monthly Consumption',
+                              range == 'week'
+                                  ? 'Daily Consumption'
+                                  : range == 'month'
+                                      ? 'Daily Consumption'
+                                      : 'Monthly Consumption',
                               style: GoogleFonts.montserrat(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -1333,9 +1090,7 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
                           ),
                           const SizedBox(height: 10),
                           GestureDetector(
-                            onTap: () {
-                              _navigateToCharts(range);
-                            },
+                            onTap: () => _navigateToPage(range, Charts(startDate: _DateRangeForNavigate(range).start, endDate: _DateRangeForNavigate(range).end, range: range)),
                             child: SizedBox(
                               height: 150,
                               child: BarChart(
@@ -1353,7 +1108,8 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
                                         showTitles: true,
                                         getTitlesWidget: (value, meta) {
                                           if (range == 'week') {
-                                            return Text(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][value.toInt()], style: GoogleFonts.montserrat(fontSize: 10));
+                                            return Text(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][value.toInt()],
+                                                style: GoogleFonts.montserrat(fontSize: 10));
                                           } else if (range == 'month') {
                                             return Text((value.toInt() + 1).toString(), style: GoogleFonts.montserrat(fontSize: 7.5));
                                           } else if (range == 'year') {
@@ -1394,91 +1150,38 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
   }
 
   Widget _buildDailyInsight(String range) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-      child: Card(
-        color: Colors.white,
-        child: ListTile(
-          title: Text(
-            'Daily Insight',
-            style: GoogleFonts.montserrat(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          trailing: const Icon(Icons.moving_rounded, color: Colors.grey),
-          onTap: () {
-            _navigateToDailyInsight(range);
-          },
-        ),
-      ),
-    );
+    return _buildInsightCard('Daily Insight', Icons.moving_rounded, () => _navigateToPage(range, DailyInsight(startDate: _DateRangeForNavigate(range).start, endDate: _DateRangeForNavigate(range).end, range: range)));
   }
 
   Widget _buildWeeklyInsight(String range) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: Card(
-        color: Colors.white,
-        child: ListTile(
-          title: Text(
-            'Weekly Insight',
-            style: GoogleFonts.montserrat(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          trailing: const Icon(Icons.moving_rounded, color: Colors.grey),
-          onTap: () {
-            _navigateToWeeklyInsight(range);
-          },
-        ),
-      ),
-    );
+    return _buildInsightCard('Weekly Insight', Icons.moving_rounded, () => _navigateToPage(range, WeeklyInsight(startDate: _DateRangeForNavigate(range).start, endDate: _DateRangeForNavigate(range).end, range: range)));
   }
 
   Widget _buildMonthlyInsight(String range) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: Card(
-        color: Colors.white,
-        child: ListTile(
-          title: Text(
-            'Monthly Insight',
-            style: GoogleFonts.montserrat(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          trailing: const Icon(Icons.moving_rounded, color: Colors.grey),
-          onTap: () {
-            _navigateToMonthlyInsight(range);
-          },
-        ),
-      ),
-    );
+    return _buildInsightCard('Monthly Insight', Icons.moving_rounded, () => _navigateToPage(range, MonthlyInsight(startDate: _DateRangeForNavigate(range).start, endDate: _DateRangeForNavigate(range).end, range: range)));
   }
 
   Widget _buildYearlyInsight(String range) {
+    return _buildInsightCard('Yearly Insight', Icons.moving_rounded, () => _navigateToPage(range, YearlyInsight(startDate: _DateRangeForNavigate(range).start, endDate: _DateRangeForNavigate(range).end, range: range)));
+  }
+
+  Widget _buildInsightCard(String title, IconData icon, VoidCallback onTap) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Card(
         color: Colors.white,
         child: ListTile(
           title: Text(
-            'Yearly Insight',
+            title,
             style: GoogleFonts.montserrat(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
-          trailing: const Icon(Icons.moving_rounded, color: Colors.grey),
-          onTap: () {
-            _navigateToYearlyInsight(range);
-          },
+          trailing: Icon(icon, color: Colors.grey),
+          onTap: onTap,
         ),
       ),
     );
   }
-
 }

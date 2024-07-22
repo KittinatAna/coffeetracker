@@ -1,9 +1,5 @@
 import 'dart:io';
-import 'dart:ui';
-// import 'dart:convert';
 import 'package:csv/csv.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,7 +7,6 @@ import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:coffeetracker/screens/home.dart';
 import 'package:coffeetracker/screens/calendar.dart';
 import 'package:coffeetracker/services/firestore_service.dart';
@@ -25,6 +20,7 @@ import 'package:coffeetracker/screens/stats/weekly_insight.dart';
 import 'package:coffeetracker/screens/stats/monthly_insight.dart';
 import 'package:coffeetracker/screens/stats/yearly_insight.dart';
 import 'package:coffeetracker/screens/stats/charts.dart';
+import 'package:coffeetracker/screens/stats/statistic_captrue.dart';
 
 class StatisticPage extends StatefulWidget {
   @override
@@ -44,10 +40,6 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
   late TabController _tabController;
   DateTime _currentDate = DateTime.now();
   final FirestoreService _firestoreService = FirestoreService();
-  final GlobalKey _dailyKey = GlobalKey();
-  final GlobalKey _weeklyKey = GlobalKey();
-  final GlobalKey _monthlyKey = GlobalKey();
-  final GlobalKey _yearlyKey = GlobalKey();
   ScreenshotController screenshotController = ScreenshotController();
 
   @override
@@ -57,7 +49,6 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
     _tabController.addListener(() {
       setState(() {});
     });
-    // SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   }
 
   @override
@@ -538,6 +529,47 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
     );
   }
 
+  String _getCurrentRange() {
+    switch (_tabController.index) {
+      case 0:
+        return 'day';
+      case 1:
+        return 'week';
+      case 2:
+        return 'month';
+      case 3:
+        return 'year';
+      default:
+        return 'day';
+    }
+  }
+
+  void _navigateToCapturePage(String action) {
+    DateTimeRange dateRange = _DateRangeForNavigate(_getCurrentRange());
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => StatisticCapturePage(
+          startDate: dateRange.start,
+          endDate: dateRange.end,
+          range: _getCurrentRange(),
+          content: _buildStatisticsContent(_getCurrentRange()),
+          screenshotController: screenshotController,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatisticsContent(String range) {
+    // This is a simplified version. You may need to customize it based on the actual content.
+    return Column(
+      children: [
+        _buildStatisticsSummary(range),
+        if (range != 'day') _buildCharts(range),
+      ],
+    );
+  }
+
   void _showShareOptions() {
     showModalBottomSheet(
       context: context,
@@ -553,44 +585,9 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
                   Column(
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.download, size: 30, color: Colors.black54,),
-                        onPressed: () {
-                          if (_tabController.index == 0) {
-                            _downloadStatistic('daily');
-                          } else if (_tabController.index == 1) {
-                            _downloadStatistic('weekly');
-                          } else if (_tabController.index == 2) {
-                            _downloadStatistic('monthly');
-                          } else if (_tabController.index == 3) {
-                            _downloadStatistic('yearly');
-                          } else {
-                          }
-                        }
-                      ),
-                      Text(
-                        ' Download ',
-                        style: GoogleFonts.montserrat(
-                          fontSize: 14,
-                          fontWeight: FontWeight.normal,
-                        ),
-                      )
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      IconButton(
                         icon: const Icon(Icons.photo_library_rounded, size: 30, color: Colors.black54,),
                         onPressed: () {
-                          if (_tabController.index == 0) {
-                            _shareStatistics('daily');
-                          } else if (_tabController.index == 1) {
-                            _shareStatistics('weekly');
-                          } else if (_tabController.index == 2) {
-                            _shareStatistics('monthly');
-                          } else if (_tabController.index == 3) {
-                            _shareStatistics('yearly');
-                          } else {
-                          }
+                          _navigateToCapturePage(_getCurrentRange());
                         }
                       ),
                       Text(
@@ -637,127 +634,13 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
     );
   }
 
-  Future<Uint8List> capturePng(GlobalKey key) async {
-    RenderRepaintBoundary boundary = key.currentContext!.findRenderObject() as RenderRepaintBoundary;
-    var image = await boundary.toImage(pixelRatio: 3);
-    ByteData? byteData = await image.toByteData(format: ImageByteFormat.png);
-    return byteData!.buffer.asUint8List();
-  }
-
-  void _downloadStatistic(String range) async {
-    Navigator.pop(context); // Close the bottom sheet
-    GlobalKey key;
-
-    switch (range) {
-      case 'daily':
-        key = _dailyKey;
-        break;
-      case 'weekly':
-        key = _weeklyKey;
-        break;
-      case 'monthly':
-        key = _monthlyKey;
-        break;
-      case 'yearly':
-        key = _yearlyKey;
-        break;
-      default:
-        return;
-    }
-
-    Uint8List imageData = await capturePng(key);
-
-    // Save the image to the gallery
-    final result = await ImageGallerySaver.saveImage(imageData);
-    if (result['isSuccess']) {
-      // print('Image saved to gallery');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Image saved to gallery',
-            style: GoogleFonts.montserrat(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          backgroundColor: Colors.green,
-          dismissDirection: DismissDirection.up,
-          behavior: SnackBarBehavior.floating,
-          margin: EdgeInsets.only(
-            bottom: MediaQuery.of(context).size.height - 210,
-            left: 15,
-            right: 15,
-          ),
-        ),
-      );
-    } else {
-      // print('Failed to save image');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Failed to save image',
-            style: GoogleFonts.montserrat(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          backgroundColor: Colors.red,
-          dismissDirection: DismissDirection.up,
-          behavior: SnackBarBehavior.floating,
-          margin: EdgeInsets.only(
-            bottom: MediaQuery.of(context).size.height - 210,
-            left: 15,
-            right: 15,
-          ),
-        ),
-      );
-    }
-  }
-
-  void _shareStatistics(String range) async {
-    Navigator.pop(context); // Close the bottom sheet
-    GlobalKey key;
-
-    switch (range) {
-      case 'daily':
-        key = _dailyKey;
-        break;
-      case 'weekly':
-        key = _weeklyKey;
-        break;
-      case 'monthly':
-        key = _monthlyKey;
-        break;
-      case 'yearly':
-        key = _yearlyKey;
-        break;
-      default:
-        return;
-    }
-
-    Uint8List imageData = await capturePng(key);
-
-    // Share the image
-    final directory = (await getApplicationDocumentsDirectory()).path;
-    final imgFile = await File('$directory/statistics.png').writeAsBytes(imageData);
-
-    final XFile file = XFile(imgFile.path);
-
-    await Share.shareXFiles(
-      [file],
-      text: 'Here are my coffee statistics for $range',
-    );
-  }
-
   Future<void> _generateCsvFile(String range, Map<String, dynamic> summaryData, Map<String, dynamic> barchartData) async {
     
     DateTimeRange dateRange = _DateRangeForNavigate(range);
     DateTime startDate = dateRange.start;
     // DateTime endDate = dateRange.end;
     
-    String _getFormattedDateRange() {
+    String getFormattedDateRange() {
       if (range == 'day') {
         DateTime startofDate = DateTime(startDate.year, startDate.month, startDate.day + 1);
         return DateFormat('d MMMM yyyy').format(startofDate);
@@ -777,7 +660,7 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
     }
 
     List<List<dynamic>> rows = [
-      ["Date: ${(_getFormattedDateRange().toString())}"],
+      ["Date: ${(getFormattedDateRange().toString())}"],
       [],
       ["Statistic", "Value"],
       ["Total Drinks Consumed", summaryData['totalDrinks'], "drinks"],
@@ -795,7 +678,7 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
 
       detailedData.sort((a, b) => a['date'].compareTo(b['date'])); // Sort by date
 
-      detailedData.forEach((data) {
+      for (var data in detailedData) {
         detailedRows.add([
           DateFormat('yyyy-MM-dd').format(data['date']),
           data['coffeeType'],
@@ -804,7 +687,7 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
           data['volume'],
           data['expenditure']
         ]);
-      });
+      }
 
       rows.addAll(detailedRows);
     }
@@ -813,7 +696,7 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
     Map<int, double> expenditurePerPeriod = barchartData['expenditurePerPeriod'] as Map<int, double>;
 
     if (range == 'week' || range == 'month' || range == 'year') {
-      List<List<dynamic>> rows_add = [
+      List<List<dynamic>> rowsAdd = [
         [],
         ["Date", "Volume (mL)", "Expenditure (GPB)"]
       ];
@@ -832,10 +715,10 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
           formattedDate = DateFormat('yyyy-MM-dd').format(DateTime(startDate.year, x + 1));
         }
 
-        rows_add.add([formattedDate, volume, expenditure]);
+        rowsAdd.add([formattedDate, volume, expenditure]);
       }
 
-      rows.addAll(rows_add);
+      rows.addAll(rowsAdd);
     }
 
     String csvData = const ListToCsvConverter().convert(rows);
@@ -977,135 +860,111 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
   }
 
   Widget _buildDailyStatistics() {
-    return RepaintBoundary(
-      key: _dailyKey,
-      child: Container(
-        color: Colors.white,
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                GestureDetector(
-                  onTap: () => _selectDate(context, 'day'),
-                  child: Text(
-                    _getCurrentDateString(),
-                    style: GoogleFonts.montserrat(
-                      fontSize: 16,
-                      fontWeight: FontWeight.normal,
-                    ),
-                  ),
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            GestureDetector(
+              onTap: () => _selectDate(context, 'day'),
+              child: Text(
+                _getCurrentDateString(),
+                style: GoogleFonts.montserrat(
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal,
                 ),
-                const SizedBox(height: 16),
-                _buildStatisticsSummary('day'),
-                _buildRanking('day'),
-                const SizedBox(height: 10),
-                _buildDailyInsight('day'),
-              ],
+              ),
             ),
-          ),
+            const SizedBox(height: 16),
+            _buildStatisticsSummary('day'),
+            _buildRanking('day'),
+            const SizedBox(height: 10),
+            _buildDailyInsight('day'),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildWeeklyStatistics() {
-    return RepaintBoundary(
-      key: _weeklyKey,
-      child: Container(
-        color: Colors.white,
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                GestureDetector(
-                  onTap: () => _selectDate(context, 'week'),
-                  child: Text(
-                    _getCurrentWeekRangeString(),
-                    style: GoogleFonts.montserrat(
-                      fontSize: 16,
-                      fontWeight: FontWeight.normal,
-                    ),
-                  ),
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            GestureDetector(
+              onTap: () => _selectDate(context, 'week'),
+              child: Text(
+                _getCurrentWeekRangeString(),
+                style: GoogleFonts.montserrat(
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal,
                 ),
-                const SizedBox(height: 16),
-                _buildStatisticsSummary('week'),
-                _buildCharts('week'),
-                _buildRanking('week'),
-                const SizedBox(height: 10),
-                _buildWeeklyInsight('week'),
-              ],
+              ),
             ),
-          ),
+            const SizedBox(height: 16),
+            _buildStatisticsSummary('week'),
+            _buildCharts('week'),
+            _buildRanking('week'),
+            const SizedBox(height: 10),
+            _buildWeeklyInsight('week'),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildMonthlyStatistics() {
-    return RepaintBoundary(
-      key: _monthlyKey,
-      child: Container(
-        color: Colors.white,
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                GestureDetector(
-                  onTap: () => _selectDate(context, 'month'),
-                  child: Text(
-                    _getCurrentMonthString(),
-                    style: GoogleFonts.montserrat(
-                      fontSize: 16,
-                      fontWeight: FontWeight.normal,
-                    ),
-                  ),
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            GestureDetector(
+              onTap: () => _selectDate(context, 'month'),
+              child: Text(
+                _getCurrentMonthString(),
+                style: GoogleFonts.montserrat(
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal,
                 ),
-                const SizedBox(height: 16),
-                _buildStatisticsSummary('month'),
-                _buildCharts('month'),
-                _buildRanking('month'),
-                const SizedBox(height: 10),
-                _buildMonthlyInsight('month'),
-              ],
+              ),
             ),
-          ),
+            const SizedBox(height: 16),
+            _buildStatisticsSummary('month'),
+            _buildCharts('month'),
+            _buildRanking('month'),
+            const SizedBox(height: 10),
+            _buildMonthlyInsight('month'),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildYearlyStatistics() {
-    return RepaintBoundary(
-      key: _yearlyKey,
-      child: Container(
-        color: Colors.white,
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                GestureDetector(
-                  onTap: () => _selectDate(context, 'year'),
-                  child: Text(
-                    _getCurrentYearString(),
-                    style: GoogleFonts.montserrat(
-                      fontSize: 16,
-                      fontWeight: FontWeight.normal,
-                    ),
-                  ),
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            GestureDetector(
+              onTap: () => _selectDate(context, 'year'),
+              child: Text(
+                _getCurrentYearString(),
+                style: GoogleFonts.montserrat(
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal,
                 ),
-                const SizedBox(height: 16),
-                _buildStatisticsSummary('year'),
-                _buildCharts('year'),
-                _buildRanking('year'),
-                const SizedBox(height: 10),
-                _buildYearlyInsight('year'),
-              ],
+              ),
             ),
-          ),
+            const SizedBox(height: 16),
+            _buildStatisticsSummary('year'),
+            _buildCharts('year'),
+            _buildRanking('year'),
+            const SizedBox(height: 10),
+            _buildYearlyInsight('year'),
+          ],
         ),
       ),
     );

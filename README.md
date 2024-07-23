@@ -8,7 +8,7 @@ CoffeeTracker is an application designed to help users track their coffee buying
 
 - Reporting and Insights: Offering robust reporting features that summarize coffee consumption and expenditure over different time periods (week, month, year), helping users understand their habits and manage their spending.
 
-- Advanced Features: Exploring additional features such as detecting the user's location via GPS to automatically identify coffee shops, and the potential to upload summary data to a web service for further analysis.
+- Advanced Features: Exploring additional features such as detecting the user's location via GPS to automatically identify coffee shops, and the potential to upload summary data to a web service in CSV file for further analysis.
 
 ## Privacy & Security
 ### Data Collection

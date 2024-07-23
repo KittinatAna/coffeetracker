@@ -438,9 +438,7 @@ class _HomeState extends State<Home> {
     DateTime endDate;
     startDate = DateTime(currentDate.year, currentDate.month, currentDate.day - 1);
     endDate = startDate.add(const Duration(days: 2));
-      return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: Column(
+      return Column(
         children: [
           ListTile(
             title: Text(
@@ -457,7 +455,7 @@ class _HomeState extends State<Home> {
               title: Text(
                 'Predictive Analytics',
                 style: GoogleFonts.montserrat(
-                  fontSize: 18,
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -480,7 +478,7 @@ class _HomeState extends State<Home> {
               title: Text(
                 'Daily Insight',
                 style: GoogleFonts.montserrat(
-                  fontSize: 18,
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -500,7 +498,6 @@ class _HomeState extends State<Home> {
             ),
           ),
         ],
-      ),
-    );
+      );
   }
 }

@@ -39,9 +39,11 @@ class _PredictiveAnalyticsState extends State<PredictiveAnalytics> {
     // Map<DateTime, Map<String, dynamic>> yearlyConsumption = {};
 
     DateTime currentMonth = DateTime.now();
+    DateTime afterDate = DateTime(currentMonth.year, currentMonth.month + 1, 1);
     DateTime sixMonthsAgo = DateTime(currentMonth.year, currentMonth.month - 5, 1);
 
     print('currentMonth: $currentMonth');
+    print('afterDate: $afterDate');
     print('sixMonthsAgo: $sixMonthsAgo');
 
     for (var record in records) {
@@ -49,6 +51,11 @@ class _PredictiveAnalyticsState extends State<PredictiveAnalytics> {
       if (recordDate.isBefore(sixMonthsAgo)) {
         continue; // Skip records older than 6 months
       }
+
+      if (recordDate.isAfter(afterDate)) {
+        continue; // Skip records newer than current month
+      }
+
       int volume = record['volume'] ?? 0;
       double expenditure = record['price'] ?? 0.0;
       totalVolume += volume;

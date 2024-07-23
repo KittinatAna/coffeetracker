@@ -56,22 +56,26 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     ],
                   ),
-                  _buildSettingsOption(
-                    icon: Icons.person,
-                    title: 'Account',
-                    trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black54, size: 20),
-                    onTap: () {
-                      // Navigate to account settings page
-                    },
-                  ),
-                  _buildSettingsOption(
-                    icon: Icons.coffee_rounded,
-                    title: 'Your Coffee',
-                    trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black54, size: 20),
-                    onTap: () {
-                      // Navigate to account settings page
-                    },
-                  ),
+                  // Future Development
+                  // _buildSettingsOption(
+                  //   icon: Icons.person,
+                  //   title: 'Account',
+                  //   trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black54, size: 20),
+                  //   onTap: () {
+                  //     // Navigate to account settings page
+                  //   },
+                  // ),
+                  // _buildSettingsOption(
+                  //   icon: Icons.coffee_rounded,
+                  //   title: 'Your Coffee',
+                  //   trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black54, size: 20),
+                  //   onTap: () {
+                  //     Navigator.push(
+                  //       context,
+                  //       MaterialPageRoute(builder: (context) => CoffeeSelectionPage()),
+                  //     );
+                  //   },
+                  // ),
                   _buildSettingsOption(
                     icon: Icons.dark_mode,
                     title: 'Dark Mode',

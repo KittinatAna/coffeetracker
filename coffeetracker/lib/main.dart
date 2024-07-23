@@ -27,7 +27,6 @@ class CoffeeTrackerApp extends StatelessWidget {
     return MaterialApp(
       title: 'CoffeeTracker',
       theme: ThemeData(
-        // primarySwatch: Colors.brown,
         visualDensity: VisualDensity.adaptivePlatformDensity,
         textTheme: GoogleFonts.montserratTextTheme(
           Theme.of(context).textTheme,

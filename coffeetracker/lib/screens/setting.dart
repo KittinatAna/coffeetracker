@@ -1,5 +1,8 @@
 import 'package:coffeetracker/screens/calendar.dart';
 import 'package:coffeetracker/screens/home.dart';
+import 'package:coffeetracker/screens/settings/about.dart';
+import 'package:coffeetracker/screens/settings/contact_support.dart';
+import 'package:coffeetracker/screens/settings/privacy_sercurity.dart';
 import 'package:coffeetracker/screens/stats/statistic.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -42,21 +45,23 @@ class _SettingsPageState extends State<SettingsPage> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10),
-                        child: Text('Application',
-                          style: GoogleFonts.montserrat(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  
                   // Future Development
+
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.start,
+                  //   children: [
+                  //     Padding(
+                  //       padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10),
+                  //       child: Text('Application',
+                  //         style: GoogleFonts.montserrat(
+                  //           fontSize: 18,
+                  //           fontWeight: FontWeight.bold,
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
                   // _buildSettingsOption(
                   //   icon: Icons.person,
                   //   title: 'Account',
@@ -76,21 +81,21 @@ class _SettingsPageState extends State<SettingsPage> {
                   //     );
                   //   },
                   // ),
-                  _buildSettingsOption(
-                    icon: Icons.dark_mode,
-                    title: 'Dark Mode',
-                    trailing: Switch(
-                      // activeColor: Colors.white,
-                      value: isDarkTheme,
-                      onChanged: (value) {
-                        setState(() {
-                          isDarkTheme = value;
-                          // Add your notification toggle logic here
-                        });
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 10.0),
+                  // _buildSettingsOption(
+                  //   icon: Icons.dark_mode,
+                  //   title: 'Dark Mode',
+                  //   trailing: Switch(
+                  //     // activeColor: Colors.white,
+                  //     value: isDarkTheme,
+                  //     onChanged: (value) {
+                  //       setState(() {
+                  //         isDarkTheme = value;
+                  //         // Add your notification toggle logic here
+                  //       });
+                  //     },
+                  //   ),
+                  // ),
+                  // const SizedBox(height: 10.0),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -107,35 +112,58 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   _buildSettingsOption(
                     icon: Icons.lock,
-                    title: 'Privacy & Security',
-                    trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black54, size: 20),
+                    title: 'Privacy and Security',
+                    trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black54, size: 15),
                     onTap: () {
-                      // Navigate to privacy & security settings page
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => PrivacySecurityPage()),
+                      );
                     },
                   ),
                   _buildSettingsOption(
                     icon: Icons.help,
                     title: 'Contact and Support',
-                    trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black54, size: 20),
+                    trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black54, size: 15),
                     onTap: () {
-                      // Navigate to help and support page
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ContactSupportPage()),
+                      );
                     },
                   ),
-                  _buildSettingsOption(
-                    icon: Icons.feedback,
-                    title: 'Feedback',
-                    trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black54, size: 20),
-                    onTap: () {
-                      // Navigate to privacy & security settings page
-                    },
-                  ),
+                  // _buildSettingsOption(
+                  //   icon: Icons.feedback,
+                  //   title: 'Rate',
+                  //   trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black54, size: 20),
+                  //   onTap: () {
+                  //     // Navigate to privacy & security settings page
+                  //   },
+                  // ),
                   _buildSettingsOption(
                     icon: Icons.info,
                     title: 'About',
-                    trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black54, size: 20),
+                    trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black54, size: 15),
                     onTap: () {
-                      // Navigate to about page
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => AboutPage()),
+                      );
                     },
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10),
+                        child: Text('Version 0.0.1',
+                          style: GoogleFonts.montserrat(
+                            fontSize: 14,
+                            fontWeight: FontWeight.normal,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

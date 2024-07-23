@@ -21,6 +21,7 @@ import 'package:coffeetracker/screens/stats/monthly_insight.dart';
 import 'package:coffeetracker/screens/stats/yearly_insight.dart';
 import 'package:coffeetracker/screens/stats/charts.dart';
 import 'package:coffeetracker/screens/stats/statistic_captrue.dart';
+import 'package:coffeetracker/screens/setting.dart';
 
 class StatisticPage extends StatefulWidget {
   @override
@@ -684,7 +685,10 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
                 NoTransitionPageRoute(builder: (context) => CalendarPage()),
               );
             } else if (index == 3) {
-              // Add navigation for Settings page if needed
+              Navigator.pushReplacement(
+                context,
+                NoTransitionPageRoute(builder: (context) => SettingsPage()),
+              );
             }
           });
         },

@@ -4,6 +4,7 @@ import 'package:coffeetracker/screens/welcome.dart';
 import 'package:coffeetracker/screens/home.dart';
 import 'package:coffeetracker/screens/addcoffee/choose_coffee.dart';
 import 'package:coffeetracker/screens/calendar.dart';
+import 'package:coffeetracker/screens/setting.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -38,6 +39,7 @@ class CoffeeTrackerApp extends StatelessWidget {
         '/home': (context) => const Home(),
         '/choose-coffee': (context) => const ChooseCoffee(),
         '/calendar': (context) => CalendarPage(),
+        '/setting': (context) => SettingsPage(),
       },
     );
   }

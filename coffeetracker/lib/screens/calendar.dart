@@ -1,3 +1,4 @@
+import 'package:coffeetracker/screens/setting.dart';
 import 'package:coffeetracker/screens/stats/statistic.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -615,7 +616,7 @@ class _CalendarPageState extends State<CalendarPage> {
             if (index == 0) {
               Navigator.pushReplacement(
                 context,
-                NoTransitionPageRoute(builder: (context) => Home()),
+                NoTransitionPageRoute(builder: (context) => const Home()),
               );
             } else if (index == 2) {
               Navigator.pushReplacement(
@@ -623,7 +624,10 @@ class _CalendarPageState extends State<CalendarPage> {
                 NoTransitionPageRoute(builder: (context) => StatisticPage()),
               );
             } else if (index == 3) {
-              // Add navigation for Settings page if needed
+              Navigator.pushReplacement(
+                context,
+                NoTransitionPageRoute(builder: (context) => SettingsPage()),
+              );
             }
           });
         },

@@ -1,3 +1,4 @@
+import 'package:coffeetracker/screens/setting.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:coffeetracker/services/firestore_service.dart';
@@ -384,16 +385,21 @@ class _HomeState extends State<Home> {
         onTap: (int index) {
           setState(() {
             if (index == 1) {
-              Navigator.push(
+              Navigator.pushReplacement(
                 context,
                 NoTransitionPageRoute(builder: (context) => CalendarPage()),
               );
             } else if (index == 2) {
-              Navigator.push(
+              Navigator.pushReplacement(
                 context,
                 NoTransitionPageRoute(builder: (context) => StatisticPage()),
               );
-            }
+            } else if (index == 3) {
+              Navigator.pushReplacement(
+                context,
+                NoTransitionPageRoute(builder: (context) => SettingsPage()),
+              );
+            } 
           });
         },
       ),

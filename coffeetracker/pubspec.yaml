@@ -1,5 +1,5 @@
 name: coffeetracker
-description: "A new Flutter project."
+description: "CoffeeTracker is an application designed to help users track their coffee buying and drinking habits. Recognizing that buying coffee in cafes can be both expensive and addictive, this app aims to provide a seamless and efficient way for users to log their coffee purchases and homemade coffee consumption."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -91,6 +91,7 @@ flutter:
     - assets/coffee-cup.png
     - assets/coffee-machine.png
     - assets/money_grey.png
+    - assets/favourite.png
     - assets/volume_forecast_model_simple.tflite
     - assets/volume_forecast_model_6m.tflite
 

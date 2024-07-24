@@ -91,6 +91,7 @@ class _AddHomemadeCoffeeState extends State<AddHomemadeCoffee> {
     });
 
     if (_selectedCoffeeType == null ||
+        _volumeController.text.isEmpty ||
         _dateController.text.isEmpty ||
         _timeController.text.isEmpty) {
       // Show error message

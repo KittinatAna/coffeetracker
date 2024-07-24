@@ -1192,7 +1192,7 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
   }
 
   Widget _buildVisitShop(String range) {
-    return _buildVisitShopCard('Visited Shop', Icons.location_on, () => _navigateToPage(range, VisitedShopPage(startDate: _DateRangeForNavigate(range).start, endDate: _DateRangeForNavigate(range).end, range: range)));
+    return _buildVisitShopCard('Visited Shops', Icons.location_on, () => _navigateToPage(range, VisitedShopPage(startDate: _DateRangeForNavigate(range).start, endDate: _DateRangeForNavigate(range).end, range: range)));
   }
 
   Widget _buildVisitShopCard(String title, IconData icon, VoidCallback onTap) {

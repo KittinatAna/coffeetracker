@@ -484,6 +484,7 @@ class _AddPurchasedCoffeeState extends State<AddPurchasedCoffee> {
     if (_selectedCoffeeType == null ||
         _selectedCoffeeSize == null ||
         _coffeeShopController.text.isEmpty ||
+        _volumeController.text.isEmpty ||
         _dateController.text.isEmpty ||
         _timeController.text.isEmpty ||
         _addressController.text.isEmpty) {

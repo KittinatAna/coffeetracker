@@ -111,5 +111,19 @@ class FirestoreService {
     await _firestore.collection('coffeerecords').add(data);
   }
 
-  fetchTopCoffeeData(String range) {}
+  // Add Favorite Coffee
+  Future<void> addFavoriteCoffee(Map<String, dynamic> favoriteCoffee) async {
+    await insertData('favorite_coffees', favoriteCoffee);
+  }
+
+  // Fetch Favorite Coffees
+  Future<List<Map<String, dynamic>>> fetchFavoriteCoffees() async {
+    return await fetchData('favorite_coffees');
+  }
+
+  // Delete Favorite Coffee
+  Future<void> deleteFavoriteCoffee(String docId) async {
+    await deleteData('favorite_coffees', docId);
+  }
+
 }

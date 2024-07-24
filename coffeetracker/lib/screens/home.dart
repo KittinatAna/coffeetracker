@@ -502,7 +502,7 @@ class _HomeState extends State<Home> {
             color: Colors.white,
             child: ListTile(
               title: Text(
-                'Visited Shop',
+                'Visited Shops',
                 style: GoogleFonts.montserrat(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,

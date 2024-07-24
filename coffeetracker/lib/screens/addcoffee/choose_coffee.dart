@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'add_purchased_coffee.dart';
 import 'add_homemade_coffee.dart';
 import 'add_coffee_vending_machine.dart';
+import 'package:coffeetracker/screens/addcoffee/favorite_coffee.dart';
+import 'package:flutter/services.dart';
 
 class NoTransitionPageRoute<T> extends MaterialPageRoute<T> {
   NoTransitionPageRoute({required WidgetBuilder builder}) : super(builder: builder);
@@ -13,8 +15,32 @@ class NoTransitionPageRoute<T> extends MaterialPageRoute<T> {
   }
 }
 
-class ChooseCoffee extends StatelessWidget {
+class ChooseCoffee extends StatefulWidget {
   const ChooseCoffee({super.key});
+
+  @override
+  _ChooseCoffeeState createState() => _ChooseCoffeeState();
+}
+
+class _ChooseCoffeeState extends State<ChooseCoffee> {
+  @override
+  void initState() {
+    super.initState();
+    // Set preferred orientations to portrait mode
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  }
+
+  @override
+  void dispose() {
+    // Reset preferred orientations to allow both portrait and landscape
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +70,7 @@ class ChooseCoffee extends StatelessWidget {
                 _buildCoffeeTypeButton(context, 'Homemade Coffee', 'assets/latte.png', _navigateToHomemadeCoffee),
                 _buildCoffeeTypeButton(context, 'Purchased Coffee', 'assets/coffee-cup.png', _navigateToPurchasedCoffee),
                 _buildCoffeeTypeButton(context, 'Coffee Vending Machine', 'assets/coffee-machine.png', _navigateToVendingCoffeeMachine),
+                _buildCoffeeTypeButton(context, 'Favourite Coffees', 'assets/favourite.png', _navigateToFavouriteCoffee),
               ],
             ),
           ],
@@ -94,6 +121,13 @@ class ChooseCoffee extends StatelessWidget {
     Navigator.push(
       context,
       NoTransitionPageRoute(builder: (context) => const AddCoffeeVendingMachine()),
+    );
+  }
+
+  void _navigateToFavouriteCoffee(BuildContext context) {
+    Navigator.push(
+      context,
+      NoTransitionPageRoute(builder: (context) => FavoriteCoffeesPage()),
     );
   }
 }

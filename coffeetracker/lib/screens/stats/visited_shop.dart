@@ -162,10 +162,14 @@ class _VisitedShopPageState extends State<VisitedShopPage> {
                 color: Colors.black,
               ),
               iconEnabledColor: Colors.black,
-              underline: Container(
-                height: 2,
-                color: Colors.black,
-              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text('Long press to copy the shop name.',
+            style: GoogleFonts.montserrat(
+              fontSize: 13,
+              fontWeight: FontWeight.normal,
+              color: Colors.grey,
             ),
           ),
           Expanded(

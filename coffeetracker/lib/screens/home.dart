@@ -1,4 +1,5 @@
 import 'package:coffeetracker/screens/setting.dart';
+import 'package:coffeetracker/screens/stats/visited_shop.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:coffeetracker/services/firestore_service.dart';
@@ -459,7 +460,7 @@ class _HomeState extends State<Home> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              trailing: const Icon(Icons.auto_graph_rounded, color: Colors.grey), //Icons.auto_graph_rounded
+              trailing: const Icon(Icons.auto_graph_rounded, color: Colors.grey),
               onTap: () {
                 Navigator.push(
                   context,
@@ -492,6 +493,27 @@ class _HomeState extends State<Home> {
                       endDate: endDate,
                       range: 'day',
                     )
+                  ),
+                );
+              },
+            ),
+          ),
+          Card(
+            color: Colors.white,
+            child: ListTile(
+              title: Text(
+                'Visited Shop',
+                style: GoogleFonts.montserrat(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              trailing: const Icon(Icons.location_on, color: Colors.grey),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  NoTransitionPageRoute(
+                    builder: (context) => VisitedShopPage()
                   ),
                 );
               },

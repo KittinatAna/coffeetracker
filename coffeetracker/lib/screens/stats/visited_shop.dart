@@ -5,14 +5,18 @@ import 'package:intl/intl.dart';
 import 'package:coffeetracker/services/firestore_service.dart';
 
 class VisitedShopPage extends StatefulWidget {
+  final DateTime startDate;
+  final DateTime endDate;
+  final String range;
+
+  const VisitedShopPage({super.key, required this.startDate, required this.endDate, required this.range});
+
   @override
   _VisitedShopPageState createState() => _VisitedShopPageState();
 }
 
 class _VisitedShopPageState extends State<VisitedShopPage> {
   final FirestoreService _firestoreService = FirestoreService();
-  DateTime _startDate = DateTime.now().subtract(const Duration(days: 7));
-  DateTime _endDate = DateTime.now();
   List<Map<String, dynamic>> _shopList = [];
   String _sortCriteria = 'volume';
 
@@ -26,7 +30,7 @@ class _VisitedShopPageState extends State<VisitedShopPage> {
     List<Map<String, dynamic>> records = await _firestoreService.fetchData('coffeerecords');
     List<Map<String, dynamic>> filteredRecords = records.where((record) {
       DateTime recordDate = DateTime.parse(record['date']);
-      return record['is_purchased'] == true && recordDate.isAfter(_startDate.subtract(const Duration(days: 1))) && recordDate.isBefore(_endDate.add(const Duration(days: 1)));
+      return record['is_purchased'] == true && recordDate.isAfter(widget.startDate) && recordDate.isBefore(widget.endDate);
     }).toList();
 
     Map<String, Map<String, dynamic>> shopSummary = {};
@@ -58,6 +62,25 @@ class _VisitedShopPageState extends State<VisitedShopPage> {
     _sortShopList();
 
     setState(() {});
+  }
+
+  String _getFormattedDateRange() {
+    if (widget.range == 'day') {
+      DateTime startofDate = DateTime(widget.startDate.year, widget.startDate.month, widget.startDate.day + 1);
+      return DateFormat('d MMMM yyyy').format(startofDate);
+    } else if (widget.range == 'week') {
+      DateTime startOfWeek = widget.startDate.subtract(Duration(days: widget.startDate.weekday - 8));
+      DateTime endOfWeek = startOfWeek.add(const Duration(days: 6));
+      return '${DateFormat('d MMM').format(startOfWeek)} - ${DateFormat('d MMM yyyy').format(endOfWeek)}';
+    } else if (widget.range == 'month') {
+      DateTime startOfMonth = DateTime(widget.startDate.year, widget.startDate.month + 2, 0);
+      return DateFormat('MMMM yyyy').format(startOfMonth);
+    } else if (widget.range == 'year') {
+      DateTime startOfYear = DateTime(widget.startDate.year + 2, 1, 0);
+      return DateFormat('yyyy').format(startOfYear);
+    } else {
+      return '';
+    }
   }
 
   void _sortShopList() {
@@ -98,35 +121,11 @@ class _VisitedShopPageState extends State<VisitedShopPage> {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                TextButton(
-                  onPressed: () async {
-                    DateTimeRange? picked = await showDateRangePicker(
-                      context: context,
-                      firstDate: DateTime(2020),
-                      lastDate: DateTime.now(),
-                      initialDateRange: DateTimeRange(start: _startDate, end: _endDate),
-                    );
-
-                    if (picked != null) {
-                      setState(() {
-                        _startDate = picked.start;
-                        _endDate = picked.end;
-                      });
-                      _fetchRecords();
-                    }
-                  },
-                  style: TextButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                  ),
-                  child: Text(
-                    '${DateFormat('dd MMMM yyyy').format(_startDate)} - ${DateFormat('dd MMMM yyyy').format(_endDate)}',
-                    style: GoogleFonts.montserrat(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
+                Text(
+                  _getFormattedDateRange(),
+                  style: GoogleFonts.montserrat(
+                    fontSize: 16,
+                    fontWeight: FontWeight.normal,
                   ),
                 ),
               ],
@@ -169,17 +168,6 @@ class _VisitedShopPageState extends State<VisitedShopPage> {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6),
-            child: Text(
-              'Long press to copy the shop name',
-              style: GoogleFonts.montserrat(
-                fontSize: 12,
-                fontWeight: FontWeight.normal,
-                color: Colors.grey,
-              ),
-            ),
-          ),
           Expanded(
             child: _shopList.isNotEmpty
                 ? ListView.builder(
@@ -215,7 +203,7 @@ class _VisitedShopPageState extends State<VisitedShopPage> {
                             ),
                           ),
                           onLongPress: () {
-                            _copyToClipboard("${shop['shopName']}");
+                            _copyToClipboard(shop['shopName']);
                           },
                         ),
                       );

@@ -513,7 +513,10 @@ class _HomeState extends State<Home> {
                 Navigator.push(
                   context,
                   NoTransitionPageRoute(
-                    builder: (context) => VisitedShopPage()
+                    builder: (context) => VisitedShopPage(
+                      startDate: startDate,
+                      endDate: endDate,
+                      range: 'day')
                   ),
                 );
               },

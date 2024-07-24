@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:coffeetracker/screens/stats/visited_shop.dart';
 import 'package:csv/csv.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
@@ -734,6 +735,7 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
             _buildRanking(range),
             const SizedBox(height: 10),
             buildInsight(range),
+            _buildVisitShop(range),
           ],
         ),
       ),
@@ -1170,6 +1172,30 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
   }
 
   Widget _buildInsightCard(String title, IconData icon, VoidCallback onTap) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Card(
+        color: Colors.white,
+        child: ListTile(
+          title: Text(
+            title,
+            style: GoogleFonts.montserrat(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          trailing: Icon(icon, color: Colors.grey),
+          onTap: onTap,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVisitShop(String range) {
+    return _buildVisitShopCard('Visited Shop', Icons.location_on, () => _navigateToPage(range, VisitedShopPage(startDate: _DateRangeForNavigate(range).start, endDate: _DateRangeForNavigate(range).end, range: range)));
+  }
+
+  Widget _buildVisitShopCard(String title, IconData icon, VoidCallback onTap) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Card(

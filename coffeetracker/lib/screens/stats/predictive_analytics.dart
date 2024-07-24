@@ -225,10 +225,10 @@ class _PredictiveAnalyticsState extends State<PredictiveAnalytics> {
                   print('totalVolume: $totalVolume');
 
                   // User Segmentation and Insights
-                  String userSegment = totalVolume > (widget.range == 'month' ? 28800*6 : 350400) ? 'High Consumer' : 'Moderate Consumer';
-                  String userRecommendation = userSegment == 'High Consumer'
-                      ? 'Consider reducing your coffee intake for better health.'
-                      : 'Your coffee consumption is within a moderate range.';
+                  // String userSegment = totalVolume > (widget.range == 'month' ? 28800*6 : 350400) ? 'High Consumer' : 'Moderate Consumer';
+                  // String userRecommendation = userSegment == 'High Consumer'
+                  //     ? 'Consider reducing your coffee intake for better health.'
+                  //     : 'Your coffee consumption is within a moderate range.';
 
                   List<_ChartData> chartData = [];
                   DateTime currentMonth = DateTime.now();
@@ -308,8 +308,8 @@ class _PredictiveAnalyticsState extends State<PredictiveAnalytics> {
                         _buildChart(chartData),
                         const SizedBox(height: 20),
                         _buildPrediction(predictedVolume, predictedExpenditure),
-                        const SizedBox(height: 20),
-                        _buildUserInsights(userSegment, userRecommendation),
+                        // const SizedBox(height: 20),
+                        // _buildUserInsights(userSegment, userRecommendation),
                         const SizedBox(height: 20),
                         _buildNotes(),
                       ],
@@ -382,27 +382,27 @@ class _PredictiveAnalyticsState extends State<PredictiveAnalytics> {
   }
 
   // Future Development
-  Widget _buildUserInsights(String segment, String recommendation) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'User Insights',
-          style: GoogleFonts.montserrat(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 10),
-        _buildInsightTile('Segment', segment),
-        const SizedBox(height: 5),
-        Text(
-          recommendation,
-          style: GoogleFonts.montserrat(fontSize: 15),
-        ),
-      ],
-    );
-  }
+  // Widget _buildUserInsights(String segment, String recommendation) {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       Text(
+  //         'User Insights',
+  //         style: GoogleFonts.montserrat(
+  //           fontSize: 16,
+  //           fontWeight: FontWeight.bold,
+  //         ),
+  //       ),
+  //       const SizedBox(height: 10),
+  //       _buildInsightTile('Segment', segment),
+  //       const SizedBox(height: 5),
+  //       Text(
+  //         recommendation,
+  //         style: GoogleFonts.montserrat(fontSize: 15),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   Widget _buildNotes() {
     return Column(

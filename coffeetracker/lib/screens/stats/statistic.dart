@@ -482,15 +482,15 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
     String getFormattedDateRange() {
       switch (range) {
         case 'day':
-          return DateFormat('d MMMM yyyy').format(startDate);
+          return DateFormat('d MMMM yyyy').format(startDate.add(const Duration(days: 1)));
         case 'week':
-          DateTime startOfWeek = startDate.subtract(Duration(days: startDate.weekday - 1));
+          DateTime startOfWeek = startDate.subtract(Duration(days: startDate.weekday - 8));
           DateTime endOfWeek = startOfWeek.add(const Duration(days: 6));
           return '${DateFormat('d MMM').format(startOfWeek)} - ${DateFormat('d MMM yyyy').format(endOfWeek)}';
         case 'month':
-          return DateFormat('MMMM yyyy').format(startDate);
+          return DateFormat('MMMM yyyy').format(startDate.add(const Duration(days: 1)));
         case 'year':
-          return DateFormat('yyyy').format(startDate);
+          return DateFormat('yyyy').format(startDate.add(const Duration(days: 1)));
         default:
           return '';
       }
@@ -549,7 +549,7 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
         } else if (range == 'month') {
           formattedDate = DateFormat('yyyy-MM-dd').format(startDate.add(Duration(days: x + 1)));
         } else {
-          formattedDate = DateFormat('yyyy-MM-dd').format(DateTime(startDate.year, x + 1));
+          formattedDate = DateFormat('yyyy-MM-dd').format(DateTime(startDate.year + 1, x + 1));
         }
 
         rowsAdd.add([formattedDate, volume, expenditure]);

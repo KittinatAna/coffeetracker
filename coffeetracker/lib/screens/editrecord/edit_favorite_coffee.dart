@@ -40,6 +40,7 @@ class _EditFavoriteCoffeePageState extends State<EditFavoriteCoffeePage> {
   }
 
   Future<void> _initializeFormFields() async {
+    if (!mounted) return; // Check if widget is still mounted
     setState(() {
       _priceController.text = widget.coffee['price'].toString();
       _volumeController.text = widget.coffee['volume'].toString();
@@ -61,6 +62,7 @@ class _EditFavoriteCoffeePageState extends State<EditFavoriteCoffeePage> {
   Future<void> _loadCoffeeData() async {
     final coffeeSizes = await _firestoreService.fetchCoffeeSizes();
     final coffeeTypes = await _firestoreService.fetchCoffeeTypes();
+    if (!mounted) return; // Check if widget is still mounted
     setState(() {
       _coffeeSizes = coffeeSizes;
       _coffeeTypes = coffeeTypes;
@@ -85,6 +87,7 @@ class _EditFavoriteCoffeePageState extends State<EditFavoriteCoffeePage> {
       MaterialPageRoute(
         builder: (context) => MapScreen(
           onLocationPicked: (address) {
+            if (!mounted) return; // Check if widget is still mounted
             setState(() {
               _addressController.text = address;
             });
@@ -96,6 +99,7 @@ class _EditFavoriteCoffeePageState extends State<EditFavoriteCoffeePage> {
   }
 
   Future<void> _saveChanges() async {
+    if (!mounted) return; // Check if widget is still mounted
     setState(() {
       if (_priceController.text.isEmpty) {
         _priceController.text = "0.00";
@@ -177,7 +181,9 @@ class _EditFavoriteCoffeePageState extends State<EditFavoriteCoffeePage> {
     );
 
     // back to the previous page
-    Navigator.of(context).pop();
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
   }
 
   Future<void> _deleteCoffee() async {
@@ -207,7 +213,9 @@ class _EditFavoriteCoffeePageState extends State<EditFavoriteCoffeePage> {
     );
 
     // back to the previous page
-    Navigator.of(context).pop();
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
   }
 
   Widget _buildCommonCoffeeDetails() {
@@ -242,9 +250,11 @@ class _EditFavoriteCoffeePageState extends State<EditFavoriteCoffeePage> {
             );
           }).toList(),
           onChanged: (String? newValue) {
-            setState(() {
-              _selectedCoffeeType = newValue;
-            });
+            if (mounted) {
+              setState(() {
+                _selectedCoffeeType = newValue;
+              });
+            }
           },
         ),
       ],
@@ -273,19 +283,21 @@ class _EditFavoriteCoffeePageState extends State<EditFavoriteCoffeePage> {
             );
           }).toList(),
           onChanged: (String? newValue) {
-            setState(() {
-              _selectedCoffeeSize = newValue;
-              // Automatically fill volume based on selected coffee size
-              if (newValue == 'Small') {
-                _volumeController.text = '227';
-              } else if (newValue == 'Medium') {
-                _volumeController.text = '341';
-              } else if (newValue == 'Large') {
-                _volumeController.text = '455';
-              } else if (newValue == 'Extra Large') {
-                _volumeController.text = '568';
-              }
-            });
+            if (mounted) {
+              setState(() {
+                _selectedCoffeeSize = newValue;
+                // Automatically fill volume based on selected coffee size
+                if (newValue == 'Small') {
+                  _volumeController.text = '227';
+                } else if (newValue == 'Medium') {
+                  _volumeController.text = '341';
+                } else if (newValue == 'Large') {
+                  _volumeController.text = '455';
+                } else if (newValue == 'Extra Large') {
+                  _volumeController.text = '568';
+                }
+              });
+            }
           },
         ),
         const SizedBox(height: 16),
@@ -675,19 +687,21 @@ class _EditFavoriteCoffeePageState extends State<EditFavoriteCoffeePage> {
             );
           }).toList(),
           onChanged: (String? newValue) {
-            setState(() {
-              _selectedCoffeeSize = newValue;
-              // Automatically fill volume based on selected coffee size
-              if (newValue == 'Small') {
-                _volumeController.text = '227';
-              } else if (newValue == 'Medium') {
-                _volumeController.text = '341';
-              } else if (newValue == 'Large') {
-                _volumeController.text = '455';
-              } else if (newValue == 'Extra Large') {
-                _volumeController.text = '568';
-              }
-            });
+            if (mounted) {
+              setState(() {
+                _selectedCoffeeSize = newValue;
+                // Automatically fill volume based on selected coffee size
+                if (newValue == 'Small') {
+                  _volumeController.text = '227';
+                } else if (newValue == 'Medium') {
+                  _volumeController.text = '341';
+                } else if (newValue == 'Large') {
+                  _volumeController.text = '455';
+                } else if (newValue == 'Extra Large') {
+                  _volumeController.text = '568';
+                }
+              });
+            }
           },
         ),
         const SizedBox(height: 16),

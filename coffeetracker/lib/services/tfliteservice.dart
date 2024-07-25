@@ -5,7 +5,7 @@ class TFLiteService {
   late Interpreter _expenditureInterpreter;
 
   Future<void> loadModel() async {
-    _volumeInterpreter = await Interpreter.fromAsset('assets/volume_forecast_model_6m.tflite');
+    _volumeInterpreter = await Interpreter.fromAsset('assets/volume_forecast_model_simple.tflite');
     _expenditureInterpreter = await Interpreter.fromAsset('assets/volume_forecast_model_simple.tflite');
   }
 

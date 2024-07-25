@@ -2,7 +2,7 @@ name: coffeetracker
 description: "CoffeeTracker is an application designed to help users track their coffee buying and drinking habits. Recognizing that buying coffee in cafes can be both expensive and addictive, this app aims to provide a seamless and efficient way for users to log their coffee purchases and homemade coffee consumption."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-# publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43

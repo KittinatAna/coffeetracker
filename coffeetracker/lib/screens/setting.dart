@@ -156,7 +156,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10),
-                        child: Text('Version 0.0.1',
+                        child: Text('Version 1.0.1',
                           style: GoogleFonts.montserrat(
                             fontSize: 14,
                             fontWeight: FontWeight.normal,

@@ -23,7 +23,7 @@ class PrivacySecurityPage extends StatelessWidget {
             children: [
               const SizedBox(height: 20),
               _buildSectionContent(
-                'Welcome to CoffeeTracker, your personal assistant for tracking your coffee purchases and consumption. We take your privacy and security seriously and want to ensure you understand how we collect, use, and protect your data.'
+                'CoffeeTracker is your personal assistant for tracking your coffee purchases and consumption. We take your privacy and security seriously and want to ensure you understand how we collect, use, and protect your data.'
               ),
               _buildSectionTitle('Data Collection'),
               _buildSectionContent(

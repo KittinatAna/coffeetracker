@@ -62,6 +62,3 @@ flutter:
     - assets/coffee-machine.png
     - assets/money_grey.png
     - assets/favourite.png
-    - assets/volume_forecast_model_simple.tflite
-    - assets/volume_forecast_model_6m.tflite
-    - assets/expenditure_forecast_model_3m.tflite

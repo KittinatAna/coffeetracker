@@ -719,13 +719,20 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            GestureDetector(
-              onTap: () => _selectDate(context, range),
-              child: Text(
-                dateRange,
-                style: GoogleFonts.montserrat(
-                  fontSize: 16,
-                  fontWeight: FontWeight.normal,
+            SizedBox(
+              height: 35,
+              child: OutlinedButton(
+                onPressed: () => _selectDate(context, range),
+                style: ButtonStyle(
+                  shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0))),
+                ),
+                child: Text(
+                  dateRange,
+                  style: GoogleFonts.montserrat(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black54
+                  ),
                 ),
               ),
             ),

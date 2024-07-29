@@ -1,4 +1,5 @@
 import 'package:coffeetracker/screens/setting.dart';
+import 'package:coffeetracker/screens/settings/about.dart';
 import 'package:coffeetracker/screens/stats/visited_shop.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -517,6 +518,27 @@ class _HomeState extends State<Home> {
                       startDate: startDate,
                       endDate: endDate,
                       range: 'day')
+                  ),
+                );
+              },
+            ),
+          ),
+          Card(
+            color: Colors.white,
+            child: ListTile(
+              title: Text(
+                'About',
+                style: GoogleFonts.montserrat(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              trailing: const Icon(Icons.info, color: Colors.grey),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  NoTransitionPageRoute(
+                    builder: (context) => AboutPage(),
                   ),
                 );
               },

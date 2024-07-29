@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:coffeetracker/services/firestore_service.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:coffeetracker/services/tfliteservice.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -19,17 +18,11 @@ class PredictiveAnalytics extends StatefulWidget {
 class _PredictiveAnalyticsState extends State<PredictiveAnalytics> {
   final FirestoreService _firestoreService = FirestoreService();
   final TooltipBehavior _tooltipBehavior = TooltipBehavior(enable: true, shared: true);
-  final TFLiteService _tfliteService = TFLiteService();
   String _selectedMetric = 'Volume';
 
   @override
   void initState() {
     super.initState();
-    _loadModel();
-  }
-
-  Future<void> _loadModel() async {
-    await _tfliteService.loadModel();
   }
 
   Future<Map<String, dynamic>> _fetchConsumptionData() async {

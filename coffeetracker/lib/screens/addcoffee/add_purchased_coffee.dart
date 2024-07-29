@@ -613,7 +613,7 @@ class _AddPurchasedCoffeeState extends State<AddPurchasedCoffee> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Take a photo or import of your receipt for automatic data extraction. Verify that the extracted data is accurate. You can make edits the data if needed.', //\nIt can make mistakes. Check and edit your info.
+                      'Take a photo or import of your receipt for automatic data extraction. Verify that the extracted data is accurate. You can edit the data if needed.', //\nIt can make mistakes. Check and edit your info.
                       style: GoogleFonts.montserrat(
                         fontSize: 14,
                         color: Colors.grey[600],

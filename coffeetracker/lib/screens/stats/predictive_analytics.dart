@@ -34,7 +34,7 @@ class _PredictiveAnalyticsState extends State<PredictiveAnalytics> {
     // Map<DateTime, Map<String, dynamic>> yearlyConsumption = {};
 
     DateTime currentMonth = DateTime.now();
-    DateTime afterDate = DateTime(currentMonth.year, currentMonth.month + 1, 1);
+    DateTime afterDate = DateTime(currentMonth.year, currentMonth.month + 1, 0);
     DateTime sixMonthsAgo = DateTime(currentMonth.year, currentMonth.month - 5, 1);
 
     print('currentMonth: $currentMonth');

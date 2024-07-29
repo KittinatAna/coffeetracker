@@ -5,8 +5,9 @@ class TFLiteService {
   late Interpreter _expenditureInterpreter;
 
   Future<void> loadModel() async {
-    _volumeInterpreter = await Interpreter.fromAsset('assets/volume_forecast_model_simple.tflite');
-    _expenditureInterpreter = await Interpreter.fromAsset('assets/volume_forecast_model_simple.tflite');
+    
+    _volumeInterpreter = await Interpreter.fromAsset('assets/volume_forecast_model_6m.tflite');
+    _expenditureInterpreter = await Interpreter.fromAsset('assets/expenditure_forecast_model_3m.tflite');
   }
 
   double predictVolume(double input) {
@@ -15,6 +16,7 @@ class TFLiteService {
       var outputTensor = List<double>.filled(1*1, 0.0).reshape([1,1]);
 
       print('inputTensor: $inputTensor');
+      print('outputTensor: $outputTensor');
 
       _volumeInterpreter.run(inputTensor, outputTensor);
       print("Completed prediction");
@@ -27,18 +29,21 @@ class TFLiteService {
     }
   }
 
-  double predictExpenditure(double input) {
+  double predictExpenditure(List<double> input) {
     try {
-      var inputTensor = [[input]];
-      var outputTensor = List<double>.filled(1*1, 0.0).reshape([1,1]);
+      var inputTensor = List.generate(1, (_) => List.generate(3, (_) => List.filled(2, 0.0)));
+      for (int i = 0; i < input.length; i++) {
+        inputTensor[1][i ~/ 2][i % 2] = input[i];
+      }
+      var outputTensor = List.filled(1, 0.0);
 
       print('inputTensor: $inputTensor');
 
       _expenditureInterpreter.run(inputTensor, outputTensor);
       print("Completed prediction");
       
-      print('outputTensor[0][0]: ${outputTensor[0][0]}');
-      return outputTensor[0][0];
+      print('outputTensor[0][0]: ${outputTensor[0]}');
+      return outputTensor[0];
     } catch (e) {
       print("Error during prediction: $e");
       return 0.0;

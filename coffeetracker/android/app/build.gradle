@@ -75,11 +75,6 @@ dependencies {
     // TODO: Add the dependencies for Firebase products you want to use
     // When using the BoM, don't specify versions in Firebase dependencies
     implementation 'com.google.firebase:firebase-analytics'
-    // TensorFlow Lite
-    implementation 'com.google.android.gms:play-services-tflite-java:16.0.1'
-    implementation 'com.google.android.gms:play-services-tflite-gpu:16.1.0'
-    implementation 'org.tensorflow:tensorflow-lite-select-tf-ops:2.4.0'
-    implementation 'org.tensorflow:tensorflow-lite:2.4.0'
 }
 
 flutter {

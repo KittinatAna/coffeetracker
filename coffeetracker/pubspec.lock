@@ -473,13 +473,13 @@ packages:
     source: hosted
     version: "0.15.4"
   http:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: http
-      sha256: "761a297c042deedc1ffbb156d6e2af13886bb305c2a343a4d972504cd67dd938"
+      sha256: b9c29a161230ee03d3ccf545097fccd9b87a5264228c5d348202e0f0c28f9010
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.1"
+    version: "1.2.2"
   http_parser:
     dependency: transitive
     description:
@@ -808,14 +808,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.2"
-  quiver:
-    dependency: transitive
-    description:
-      name: quiver
-      sha256: b1c1ac5ce6688d77f65f3375a9abb9319b3cb32486bdc7a1e0fdf004d7ba4e47
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.2.1"
   sanitize_html:
     dependency: transitive
     description:
@@ -832,14 +824,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
-  scroll_screenshot:
-    dependency: "direct main"
-    description:
-      name: scroll_screenshot
-      sha256: c5ed70632114e903e6f0ddc1d3556f2cc92f70933aa445b885c07a523274a4d7
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.4"
   share_plus:
     dependency: "direct main"
     description:
@@ -1013,14 +997,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.0"
-  tflite_flutter:
-    dependency: "direct main"
-    description:
-      name: tflite_flutter
-      sha256: ffb8651fdb116ab0131d6dc47ff73883e0f634ad1ab12bb2852eef1bbeab4a6a
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.10.4"
   typed_data:
     dependency: transitive
     description:

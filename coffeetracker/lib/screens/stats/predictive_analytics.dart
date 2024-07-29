@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:coffeetracker/services/firestore_service.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:coffeetracker/services/tfliteservice.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class PredictiveAnalytics extends StatefulWidget {
   final String range;
@@ -113,37 +115,56 @@ class _PredictiveAnalyticsState extends State<PredictiveAnalytics> {
 
   Future<Map<String, double>> _getPrediction(Map<DateTime, Map<String, dynamic>> monthlyConsumption) async {
     print('monthlyConsumption: $monthlyConsumption');
-    List<double> volumeInput = monthlyConsumption.values
-        .map((e) => e['volume']?.toDouble() ?? 0.0)
-        .cast<double>()
-        .toList();
-    List<double> expenditureInput = monthlyConsumption.values
-        .map((e) => e['expenditure']?.toDouble() ?? 0.0)
-        .cast<double>()
-        .toList();
+
+    List<double> volumeInput = [];
+    List<double> expenditureInput = [];
+
+    for (var value in monthlyConsumption.values) {
+      volumeInput.add(value['volume']?.toDouble() ?? 0.0);
+      expenditureInput.add(value['expenditure']?.toDouble() ?? 0.0);
+    }
 
     // Volume
+    print('-----Volume-----');
     print('inputData.length: ${volumeInput.length}');
     print('inputData: $volumeInput');
-    print('inputData.last: ${volumeInput.last}');
+    print('inputData.last: ${volumeInput.sublist(volumeInput.length - 3)}');
 
     // Expenditure
+    print('-----Expenditure-----');
     print('inputData.length: ${expenditureInput.length}');
     print('inputData: $expenditureInput');
-    print('inputData.last: ${expenditureInput.last}');
+    print('inputData.last: ${expenditureInput.sublist(expenditureInput.length - 5)}');
 
     double predictedVolume;
     double predictedExpenditure;
 
-    if (volumeInput.isNotEmpty) {
-      predictedVolume = _tfliteService.predictVolume(volumeInput.last);
+    if (volumeInput.isNotEmpty && expenditureInput.isNotEmpty) {
+    final response = await http.post(
+      Uri.parse('https://api-ml-heroku-eaeb01fffd52.herokuapp.com/predict'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'volume_input': volumeInput.sublist(volumeInput.length - 3),
+        'price_input': expenditureInput.sublist(expenditureInput.length - 5),
+      }),
+    );
+
+    if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        print('Response Data: $responseData');
+
+        // Extracting the first element from the list
+        predictedVolume = (responseData['volume_prediction'][0] as List).first.toDouble();
+        predictedExpenditure = (responseData['price_prediction'][0] as List).first.toDouble();
+      } else {
+        predictedVolume = 0.0;
+        predictedExpenditure = 0.0;
+        print('Failed to load prediction: ${response.statusCode}');
+      }
     } else {
       predictedVolume = 0.0; // Not enough data for prediction, use average value or default
-    }
-
-    if (expenditureInput.isNotEmpty) {
-      predictedExpenditure = _tfliteService.predictExpenditure(expenditureInput.last);
-    } else {
       predictedExpenditure = 0.0; // Not enough data for prediction, use average value or default
     }
 

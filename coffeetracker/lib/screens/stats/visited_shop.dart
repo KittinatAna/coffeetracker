@@ -165,7 +165,7 @@ class _VisitedShopPageState extends State<VisitedShopPage> {
             ),
           ),
           const SizedBox(height: 10),
-          Text('Long press to copy the shop name.',
+          Text('Long press to copy the shop name and address.',
             style: GoogleFonts.montserrat(
               fontSize: 13,
               fontWeight: FontWeight.normal,
@@ -207,7 +207,7 @@ class _VisitedShopPageState extends State<VisitedShopPage> {
                             ),
                           ),
                           onLongPress: () {
-                            _copyToClipboard(shop['shopName']);
+                            _copyToClipboard("${shop['shopName']}, ${shop['address']}");
                           },
                         ),
                       );

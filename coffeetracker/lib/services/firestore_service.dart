@@ -43,7 +43,6 @@ class FirestoreService {
         'is_android': Platform.isAndroid,
         'is_ios': Platform.isIOS,
         'created_at': FieldValue.serverTimestamp(),
-        'updated_at': FieldValue.serverTimestamp(),
       });
     }
   }

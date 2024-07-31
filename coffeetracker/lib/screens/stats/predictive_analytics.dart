@@ -129,10 +129,13 @@ class _PredictiveAnalyticsState extends State<PredictiveAnalytics> {
     print('inputData: $expenditureInput');
     print('inputData.last: ${expenditureInput.sublist(expenditureInput.length - 5)}');
 
-    double predictedVolume;
-    double predictedExpenditure;
+    if (volumeInput.sublist(volumeInput.length - 3).contains(0.0) || expenditureInput.sublist(expenditureInput.length - 5).contains(0.0)) {
+      return {
+        'predictedVolume': 0.0,
+        'predictedExpenditure': 0.0,
+      };
+    }
 
-    if (volumeInput.isNotEmpty && expenditureInput.isNotEmpty) {
     final response = await http.post(
       Uri.parse('https://api-ml-heroku-eaeb01fffd52.herokuapp.com/predict'),
       headers: <String, String>{
@@ -145,26 +148,17 @@ class _PredictiveAnalyticsState extends State<PredictiveAnalytics> {
     );
 
     if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
-        print('Response Data: $responseData');
-
-        // Extracting the first element from the list
-        predictedVolume = (responseData['volume_prediction'][0] as List).first.toDouble();
-        predictedExpenditure = (responseData['price_prediction'][0] as List).first.toDouble();
-      } else {
-        predictedVolume = 0.0;
-        predictedExpenditure = 0.0;
-        print('Failed to load prediction: ${response.statusCode}');
-      }
+      final responseData = jsonDecode(response.body);
+      return {
+        'predictedVolume': (responseData['volume_prediction'][0] as List).first.toDouble(),
+        'predictedExpenditure': (responseData['price_prediction'][0] as List).first.toDouble(),
+      };
     } else {
-      predictedVolume = 0.0; // Not enough data for prediction, use average value or default
-      predictedExpenditure = 0.0; // Not enough data for prediction, use average value or default
+      return {
+        'predictedVolume': 0.0,
+        'predictedExpenditure': 0.0,
+      };
     }
-
-    return {
-      'predictedVolume': predictedVolume,
-      'predictedExpenditure': predictedExpenditure,
-    };
   }
 
   String _getFormattedDateRange() {
@@ -223,6 +217,14 @@ class _PredictiveAnalyticsState extends State<PredictiveAnalytics> {
             // double averageExpenditure = widget.range == 'month'
             //     ? totalExpenditure / monthlyConsumption.length
             //     : totalExpenditure / yearlyConsumption.length;
+
+            List<double> volumeInput = [];
+            List<double> expenditureInput = [];
+
+            for (var value in monthlyConsumption.values) {
+              volumeInput.add(value['volume']?.toDouble() ?? 0.0);
+              expenditureInput.add(value['expenditure']?.toDouble() ?? 0.0);
+            }
 
             return FutureBuilder<Map<String, double>>(
               future: _getPrediction(monthlyConsumption),
@@ -320,6 +322,18 @@ class _PredictiveAnalyticsState extends State<PredictiveAnalytics> {
                           ],
                         ),
                         _buildChart(chartData),
+                        if (volumeInput.sublist(volumeInput.length - 3).contains(0.0) || expenditureInput.sublist(expenditureInput.length - 5).contains(0.0)) 
+                          Center(
+                            child: Text(
+                              'There is not enough record to predict the next month.',
+                              style: GoogleFonts.montserrat(
+                                fontSize: 12,
+                                fontWeight: FontWeight.normal,
+                                color: Colors.red,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
                         const SizedBox(height: 20),
                         _buildPrediction(predictedVolume, predictedExpenditure),
                         // const SizedBox(height: 20),

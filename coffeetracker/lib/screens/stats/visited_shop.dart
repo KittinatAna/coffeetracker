@@ -107,7 +107,7 @@ class _VisitedShopPageState extends State<VisitedShopPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Visited Coffee Shop',
+          'Visited Coffee Shops',
           style: GoogleFonts.montserrat(
             fontSize: 20,
             fontWeight: FontWeight.bold,

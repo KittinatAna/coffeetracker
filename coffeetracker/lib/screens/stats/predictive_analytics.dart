@@ -121,15 +121,13 @@ class _PredictiveAnalyticsState extends State<PredictiveAnalytics> {
     print('-----Volume-----');
     print('inputData.length: ${volumeInput.length}');
     print('inputData: $volumeInput');
-    print('inputData.last: ${volumeInput.sublist(volumeInput.length - 3)}');
 
     // Expenditure
     print('-----Expenditure-----');
     print('inputData.length: ${expenditureInput.length}');
     print('inputData: $expenditureInput');
-    print('inputData.last: ${expenditureInput.sublist(expenditureInput.length - 5)}');
 
-    if (volumeInput.sublist(volumeInput.length - 3).contains(0.0) || expenditureInput.sublist(expenditureInput.length - 5).contains(0.0)) {
+    if (volumeInput.contains(0.0) || expenditureInput.contains(0.0)) {
       return {
         'predictedVolume': 0.0,
         'predictedExpenditure': 0.0,
@@ -142,8 +140,8 @@ class _PredictiveAnalyticsState extends State<PredictiveAnalytics> {
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(<String, dynamic>{
-        'volume_input': volumeInput.sublist(volumeInput.length - 3),
-        'price_input': expenditureInput.sublist(expenditureInput.length - 5),
+        'volume_input': volumeInput,
+        'price_input': expenditureInput,
       }),
     );
 
@@ -322,7 +320,7 @@ class _PredictiveAnalyticsState extends State<PredictiveAnalytics> {
                           ],
                         ),
                         _buildChart(chartData),
-                        if (volumeInput.sublist(volumeInput.length - 3).contains(0.0) || expenditureInput.sublist(expenditureInput.length - 5).contains(0.0)) 
+                        if (volumeInput.contains(0.0) || expenditureInput.contains(0.0)) 
                           Center(
                             child: Text(
                               'There is not enough record to predict the next month.',

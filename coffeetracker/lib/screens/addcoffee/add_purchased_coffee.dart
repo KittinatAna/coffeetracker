@@ -167,13 +167,16 @@ class _AddPurchasedCoffeeState extends State<AddPurchasedCoffee> {
       'Costa',
       'Starbucks',
       'Tim Hortons',
-      'Dunkin Donuts',
+      'Dunkin',
       'McCafe',
       'Caffe Nero',
       'Pret A Manger',
       'Greggs',
       'Esquires Coffee',
-      'Patisserie Valerie'
+      'Patisserie Valerie',
+      'Cafe Ritazza',
+      'Black Sheep',
+      'Esquires'
     ];
     String pattern = coffeeShops.join('|');
     RegExp regex = RegExp('($pattern)', caseSensitive: false);

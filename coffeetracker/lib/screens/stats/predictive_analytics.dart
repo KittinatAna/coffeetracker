@@ -443,7 +443,7 @@ class _PredictiveAnalyticsState extends State<PredictiveAnalytics> {
         ),
         const SizedBox(height: 10),
         Text(
-          'This forecast is generated using your historical data. Please note that predictions may not be entirely precise. This information is intended to offer general insights.',
+          'This forecast is generated using at least 6 months of your historical data. Please note that predictions may not be entirely precise. This information is intended to offer general insights.',
           style: GoogleFonts.montserrat(fontSize: 15),
         ),
       ],

@@ -968,7 +968,7 @@ class _StatisticPageState extends State<StatisticPage> with SingleTickerProvider
                                         ),
                                       ),
                                       title: Text(
-                                        isLandscape || coffeeShop.length <= 20 ? coffeeShop : '${coffeeShop.substring(0, 20)}...',
+                                        isLandscape || coffeeShop.length <= 15 ? coffeeShop : '${coffeeShop.substring(0, 15)}...',
                                         style: GoogleFonts.montserrat(
                                           fontSize: 16,
                                           fontWeight: FontWeight.normal,

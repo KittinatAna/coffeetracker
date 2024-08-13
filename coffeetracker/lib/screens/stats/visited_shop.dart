@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:coffeetracker/services/firestore_service.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class VisitedShopPage extends StatefulWidget {
   final DateTime startDate;
@@ -102,6 +104,36 @@ class _VisitedShopPageState extends State<VisitedShopPage> {
     );
   }
 
+  Future<void> _showLocationOnMap(Map<String, dynamic> shop) async {
+    try {
+      List<Location> locations = await locationFromAddress(shop['address']);
+      if (locations.isNotEmpty) {
+        Location location = locations.first;
+        LatLng latLng = LatLng(location.latitude, location.longitude);
+
+        // Navigate to Google Maps with the LatLng
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MapViewScreen(latLng: latLng, shop: shop),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Location not found!'),
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $e'),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -164,14 +196,6 @@ class _VisitedShopPageState extends State<VisitedShopPage> {
               iconEnabledColor: Colors.black,
             ),
           ),
-          const SizedBox(height: 10),
-          Text('Long press to copy the shop name and address.',
-            style: GoogleFonts.montserrat(
-              fontSize: 13,
-              fontWeight: FontWeight.normal,
-              color: Colors.grey,
-            ),
-          ),
           Expanded(
             child: _shopList.isNotEmpty
                 ? ListView.builder(
@@ -206,9 +230,12 @@ class _VisitedShopPageState extends State<VisitedShopPage> {
                               fontSize: 16,
                             ),
                           ),
-                          onLongPress: () {
-                            _copyToClipboard("${shop['shopName']}, ${shop['address']}");
-                          },
+                          trailing: IconButton(
+                            icon: const Icon(Icons.location_pin, color: Colors.red),
+                            onPressed: () {
+                              _showLocationOnMap(shop);
+                            },
+                          ),
                         ),
                       );
                     },
@@ -221,6 +248,43 @@ class _VisitedShopPageState extends State<VisitedShopPage> {
                   ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class MapViewScreen extends StatelessWidget {
+  final LatLng latLng;
+  final Map<String, dynamic> shop;
+
+  const MapViewScreen({super.key, required this.latLng, required this.shop});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Shop Location', 
+          style: GoogleFonts.montserrat(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      body: GoogleMap(
+        initialCameraPosition: CameraPosition(
+          target: latLng,
+          zoom: 15.0,
+        ),
+        markers: {
+          Marker(
+            markerId: const MarkerId('shopLocation'),
+            position: latLng,
+            infoWindow: InfoWindow(
+              title: shop['shopName'],
+              snippet: 'Drinks: ${shop['drinks']}, Volume: ${shop['volume']} mL, Expenditure: £${shop['expenditure'].toStringAsFixed(2)}',
+            ),
+          ),
+        },
       ),
     );
   }

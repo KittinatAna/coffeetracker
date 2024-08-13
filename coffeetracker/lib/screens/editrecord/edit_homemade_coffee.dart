@@ -250,17 +250,137 @@ class _EditRecord_HomemadeCoffeeState extends State<EditRecord_HomemadeCoffee> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    TextField(
-                      controller: _volumeController,
-                      decoration: InputDecoration(
-                        labelText: 'Estimated Volume (mL)*',
-                        labelStyle: GoogleFonts.montserrat(
-                          fontSize: 14,
-                          color: Colors.grey[600],
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _volumeController,
+                            decoration: InputDecoration(
+                              labelText: 'Estimated Volume (mL)*',
+                              labelStyle: GoogleFonts.montserrat(
+                                fontSize: 14,
+                                color: Colors.grey[600],
+                              ),
+                              border: const OutlineInputBorder(),
+                            ),
+                            keyboardType: TextInputType.number,
+                          ),
                         ),
-                        border: const OutlineInputBorder(),
-                      ),
-                      keyboardType: TextInputType.number,
+                        IconButton(
+                          icon: Icon(Icons.info_outline, color: Colors.grey[600]),
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('Volume Information', style: GoogleFonts.montserrat(fontSize: 18, fontWeight: FontWeight.bold)),
+                                  content: SingleChildScrollView(
+                                    child: Table(
+                                      border: TableBorder.all(color: Colors.grey),
+                                      columnWidths: const <int, TableColumnWidth>{
+                                        0: FlexColumnWidth(),
+                                        1: FixedColumnWidth(50),
+                                        2: FixedColumnWidth(50),
+                                      },
+                                      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                                      children: <TableRow>[
+                                        TableRow(
+                                          children: <Widget>[
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Text('Size', style: GoogleFonts.montserrat(fontSize: 14, fontWeight: FontWeight.bold)),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Text('Oz.', style: GoogleFonts.montserrat(fontSize: 14, fontWeight: FontWeight.bold)),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Text('mL.', style: GoogleFonts.montserrat(fontSize: 14, fontWeight: FontWeight.bold)),
+                                            ),
+                                          ],
+                                        ),
+                                        TableRow(
+                                          children: <Widget>[
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Text('Small', style: GoogleFonts.montserrat(fontSize: 14)),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Text('8', style: GoogleFonts.montserrat(fontSize: 14)),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Text('227', style: GoogleFonts.montserrat(fontSize: 14)),
+                                            ),
+                                          ],
+                                        ),
+                                        TableRow(
+                                          children: <Widget>[
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Text('Medium', style: GoogleFonts.montserrat(fontSize: 14)),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Text('12', style: GoogleFonts.montserrat(fontSize: 14)),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Text('341', style: GoogleFonts.montserrat(fontSize: 14)),
+                                            ),
+                                          ],
+                                        ),
+                                        TableRow(
+                                          children: <Widget>[
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Text('Large', style: GoogleFonts.montserrat(fontSize: 14)),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Text('16', style: GoogleFonts.montserrat(fontSize: 14)),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Text('455', style: GoogleFonts.montserrat(fontSize: 14)),
+                                            ),
+                                          ],
+                                        ),
+                                        TableRow(
+                                          children: <Widget>[
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Text('Extra-large', style: GoogleFonts.montserrat(fontSize: 14)),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Text('20', style: GoogleFonts.montserrat(fontSize: 14)),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Text('568', style: GoogleFonts.montserrat(fontSize: 14)),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      child: Text('Close', style: GoogleFonts.montserrat(fontSize: 14)),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 16),
                     TextField(

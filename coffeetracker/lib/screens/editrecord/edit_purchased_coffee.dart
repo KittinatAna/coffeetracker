@@ -127,6 +127,8 @@ class _EditRecord_PurchaseCoffeeState extends State<EditRecord_PurchaseCoffee> {
     String extractedText = _processRecognizedText(recognizedText);
     print('Extracted text: $extractedText');  // Debug print
 
+    bool coffeeTypeFound = false;
+
     if (extractedText.isNotEmpty) {
       setState(() {
 
@@ -148,7 +150,7 @@ class _EditRecord_PurchaseCoffeeState extends State<EditRecord_PurchaseCoffee> {
         _dateController.text = _extractDate(extractedText);
         _timeController.text = _extractTime(extractedText);
         _coffeeNameController.text = _extractCoffeeName(extractedText);
-        // _addressController.text = _extractAddress(extractedText);
+        coffeeTypeFound = _selectedCoffeeType != null; // Check if coffee type is found
       });
 
       String address = _extractAddress(extractedText);
@@ -161,6 +163,24 @@ class _EditRecord_PurchaseCoffeeState extends State<EditRecord_PurchaseCoffee> {
     }
 
     textRecognizer.close();
+
+    if (!coffeeTypeFound) {
+      // Show notification if coffee type was not found
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'No coffee type matched from the receipt. Please enter details manually.',
+            style: GoogleFonts.montserrat(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    }
   }
 
   String _processRecognizedText(RecognizedText recognizedText) {

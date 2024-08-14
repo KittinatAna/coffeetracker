@@ -97,6 +97,18 @@ class _AddPurchasedCoffeeState extends State<AddPurchasedCoffee> {
     String extractedText = _processRecognizedText(recognizedText);
     print('Extracted text: $extractedText');  // Debug print
 
+    // Reset fields
+    setState(() {
+        _coffeeShopController.text = '';
+        _selectedCoffeeType = null;
+        _priceController.text = '';
+        _dateController.text = '';
+        _timeController.text = '';
+        _coffeeNameController.text = '';
+    });
+
+    bool coffeeTypeFound = false;
+
     if (extractedText.isNotEmpty) {
       setState(() {
         _coffeeShopController.text = _extractShopName(extractedText);
@@ -105,7 +117,7 @@ class _AddPurchasedCoffeeState extends State<AddPurchasedCoffee> {
         _dateController.text = _extractDate(extractedText);
         _timeController.text = _extractTime(extractedText);
         _coffeeNameController.text = _extractCoffeeName(extractedText);
-        // _addressController.text = _extractAddress(extractedText);
+        coffeeTypeFound = _selectedCoffeeType != null; // Check if coffee type is found
       });
 
       String address = _extractAddress(extractedText);
@@ -118,6 +130,24 @@ class _AddPurchasedCoffeeState extends State<AddPurchasedCoffee> {
     }
 
     textRecognizer.close();
+
+    if (!coffeeTypeFound) {
+      // Show notification if coffee type was not found
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'No coffee type matched from the receipt. Please enter details manually.',
+            style: GoogleFonts.montserrat(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    }
   }
 
   String _processRecognizedText(RecognizedText recognizedText) {

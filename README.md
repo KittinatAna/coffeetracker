@@ -1,6 +1,8 @@
 # CoffeeTracker
 
-CoffeeTracker is an application designed to help users track their coffee buying and drinking habits. Recognizing that buying coffee in cafes can be both expensive and addictive, this app aims to provide a seamless and efficient way for users to log their coffee purchases and homemade coffee consumption. The primary objectives of this project include:
+This project is part of the dissertation and is my own and was carried out by me during my MSc course at the University of Strathclyde. It has not been submitted for assessment in any other context.
+
+CoffeeTracker is an application designed to help users track their coffee buying and drinking habits. Recognising that buying coffee in cafes can be both expensive and addictive, this app aims to provide a seamless and efficient way for users to log their coffee purchases and homemade coffee consumption. The primary objectives of this project include:
 
 - User-Friendly Interface: Ensuring the interface is quick, fluid, and easy to use, allowing users to effortlessly record their coffee purchases, specify the type (e.g., espresso, latte), the shop, and the price.
 
